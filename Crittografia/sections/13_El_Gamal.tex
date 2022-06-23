@@ -1,0 +1,40 @@
+\chapter{Cifrario di El Gamal}
+\section{Spiegazione}
+Il cifrario di El Gamal è un'alternativa al binomio RSA-AES.
+\begin{framed}\noindent \textbf{Costruzione della chiave pubblica}. Bob mette a disposizione la sua chiave pubblica, la costruisce:
+	\begin{itemize}
+		\item sceglie $p$ molto grande, primo e sceglie $g$ generatore di $Z_p^*$
+		\item \textbf{Scelta della chiave privata}. Bob sceglie $x$ tale che $1 < x < p-1$. Sarà la chiave privata $k[\text{priv}]=x$, usata da Bob al momento della decifrazione.
+		\item calcola $y = g^x \text{ mod } p$
+		\item ha ottenuto $k[\text{pub}]=<p, g, y>$
+	\end{itemize}
+\end{framed}
+\paragraph{Cifratura} Alice vuole inviare un messaggio $m$ a Bob.
+\[\boxed{\text{Il messaggio è trattato come un numero tale che: $0 \leq m < p$.}}\]
+\begin{itemize}
+    \item Si procura la chiave pubblica di Bob $k[\text{pub}]=<p, g, y>$ 
+    
+    \item Sceglie a caso $1 < r < p-1$ (da tenere segreto)
+    \item Calcola $c$ e $d$
+    \begin{align*}
+    	c = g^r \text{ mod } p&&d = m \cdot y^r \text{ mod } p
+    \end{align*}
+	$c$ apparterrà a $Z_p^*$, ovviamente. 
+    \item Allo step precedente Alice ha  ottenuto la coppia $<c,d>$, che invia a Bob. \begin{itemize}
+    	\item $c$ contiene "protetto" l'informazione sul numero casuale $r$ (protetto perchè c'è il problema del logaritmo discreto se volessi calcolare $r$)
+    	\item $d$ è il messaggio $m$ a cui è stata applicata una maschera (messaggio trattato come un numero, moltiplicato per un valore casuale)
+\end{itemize}\end{itemize}
+\paragraph{Decifrazione} Bob deve quindi decifrare il messaggio:
+$$ m = \frac{d}{c^x} \text{ mod } p = d\cdot \frac{1}{c^x} \text{ mod } p= d \cdot c^{-x} \text{ mod } p $$
+$x$ è la chiave privata scelta da Bob! Il calcolo è possibile solo se si conosce la chiave privata.
+
+\section{Dimostrazione di correttezza}
+Per dimostrare la correttezza recupero la formula con cui Alice ha calcolato $d$ e $c$, e la formula con cui Bob ha calcolato $y$.
+$$ \frac{d}{c^x} \text{ mod } p = \frac{y^r \cdot m}{c^x} \text{ mod } p = \frac{\cancel{(g^x)^r} \cdot m}{\cancel{(g^r)^x}} \text{ mod } p = m $$
+E' sicuro perché Eve conosce $<p,g,y,c,d>$, tutto tranne $r$ ed $x$: conoscere almeno una delle due cose permetterebbe di trovare il messaggio in chiaro $m$.
+\paragraph{Trapdoor} 
+\begin{itemize}
+	\item Se si conoscesse $x$ si potrebbe calcolare $$m = \frac{d}{c^x} \text{ mod } p$$
+	\item Se si conoscesse $r$ si potrebbe calcolare $$m = \frac{d}{y^r} = \frac{\cancel{y^r} \cdot m}{\cancel{y^r}} \text{ mod } p$$
+\end{itemize}
+\paragraph{NB} Importante mantenere $r$ segreto ed usarlo solo una volta!

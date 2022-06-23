@@ -1,0 +1,123 @@
+\chapter{Protocollo conoscenza zero (\emph{Zero Knowledge})}
+
+\section{Idea Generale}
+Un protoccolo \emph{zero knowledge} è un protocollo che permette ad un utente detto \emph{Prover} (il dimostratore) di dimostrare di avere una certa conoscenza ad un \emph{Verifier} (il verificatore) senza inviare alcuna informazione se non l'evidenza di avere questa conoscenza.
+
+\paragraph{Esempio} Facciamo un esempio concreto: supponiamo che Peggy dica di poter sapere se il numero di granelli di sabbia di cui si compone una spiaggia è pari o dispari, e che Victor voglia controllare la veridicità di questa affermazione senza arrivare alla totale certezza ma avvicinandosi tramite una probabilità prossima ad 1. Supponiamo che Peggy risponda:
+\begin{itemize}
+    \item 1 se il numero è dispari
+    \item 0 se il numero è pari
+\end{itemize}
+Immaginiamo il seguente algoritmo:
+\begin{verbatim}
+for i = 1 to k { // k numero di sfide che Peggy deve superare
+    <P si volta>
+    <V sceglie e in {0, 1} casualmente> // un po' come lanciare una moneta
+    if (e == 0)
+        <V rimuove un granello di sabbia>
+    <V chiede a P il nuovo b[i]>
+    if ((e == 0 && b[i] != b[i-1]) || (e == 1 && b[i] == b[i-1]))
+        <vado alla prossima iterazione>
+    else
+        <P è un imbroglione -> STOP>
+}
+\end{verbatim}
+Facciamo $k$ test per assicurarci che Peggy stia dicendo il vero. Se una sfida viene perduta allora Peggy è un imbroglione, e ci fermiamo: deve essere in grado di vincere tutte le sfide!
+\paragraph{Probabilità} La probabilità, al passo k, che Peggy sia un impostore è pari a:
+$$
+    P(\text{Peggy è un impostore})=\frac{1}{2^k}
+$$
+altresì la probabilità che Peggy dica il vero è:
+$$
+    P(\text{Peggy dice il vero})=1 - \frac{1}{2^k}
+$$
+Se il Prover è onesto non ha problemi a rispondere a tutte le iterazioni in maniera corretta, se non lo è può solo provare ad indovinare, quindi la probabilità di vincere imbrogliando è pari a quella di \textbf{\underline{indovinare una sequenza di k bit casuali}}. Quanto detto, attenzione, non è una dimostrazione rigorosa.
+
+
+\subsection{Proprietà generali}
+Quali sono le proprietà che deve avere un protocollo per poter essere definito \emph{protocollo a conoscenza zero}?
+\begin{itemize}
+	\item \textbf{Completezza}. 
+	
+	Se ciò che dice P è vero e V è onesto allora V deve sempre accettare la dimostrazione.
+	
+	\item \textbf{Correttezza}.
+	
+	Se P dice il falso allora V può essere ingannato con probabilità $\leq \frac{1}{2^k}$, con $k$ scelto da V.
+	
+	\item \textbf{Conoscenza zero}.
+	
+	Se l'affermazione di P è vera V (anche se disonesto) non può acquisire alcuna informazione se non il fatto che P ha la conoscenza che dice di avere.
+\end{itemize}
+
+\section{Protocollo di identificazione Fiat-Shamir}
+E' un protocollo di identificazione nel quale P dimostra a V la sua identità senza svelare altre informazioni. Si basa sulla difficoltà di invertire la funzione potenza nell'algebra modulare, ovvero di calcolare la raidce in modulo.
+\paragraph{Precisamente} Abbiamo la formula 
+$$t=s^2 \text{ mod } n$$
+Dati $s,n$ ($n$ composto) è facile trovare $t$ (calcolare la potenza). Dati $t$ ed $n$ è difficile trovare $s$, cioè calcolare la radice in modulo.
+$$s=\sqrt{t} \text{ mod }n$$
+Il Verifier conosce $<t,n>$, il Prover deve convincere il Verifier di conoscere $s$. A situazione normale il Verifier riceve $s$ dal prover e calcola $t$ in tempo polinomiale: se il $t$ calcolato coincide col $t$ che già conosceva allora è sicuro che il Prover conosce $s$. Nel caso dello Zero Knowledge vogliamo dare al Prover una "quasi certezza" di questo senza che $s$ venga trasmesso sul canale. 
+
+\subsection{Generazione della chiave da parte del Prover}
+Il prover genera la chiave, sia quella pubblica che quella privata.
+\begin{itemize}
+    \item $P$ genera $p$ e $q$ numeri primi (grandi)
+    \item $P$ calcola $n = p \cdot q$ (otteniamo un numero composto)
+    \item $P$ sceglie $s$ numero casuale tale che $s < n$ ($s$ sarà il suo segreto)
+    \item $P$ calcola $\boxed{t = s^2 \mod n}$
+\end{itemize}
+La chiave pubblica sono i valori conosciuti dal Verifier: $<t,n>$. La chiave privata è ciò che è conosciuto esclusivamente dal Prover: $<p, q, s>$. Nel protocollo il Verifier vuole assicurarsi che il Prover conosca la chiave privata senza accedere alla chiave privata.
+
+\subsection{Autenticazione}
+L'algoritmo di autenticazione prevede $k$ iterazioni con $k$ scelto da V. Dopo $k$ passi il V si convince che P conosce la radice (con la probabilità che abbiamo detto). Arriverà a questa conclusione senza entrare in contatto con i valori segreti. 
+\begin{enumerate}
+    \item P genera un intero $r < n$, calcola $$\boxed{u = r^2 \text{ mod } n}$$ e comunica $u$ a V
+    \item V sceglie casualmente $e \in \{1, 0\}$ e lo comunica a P
+    \item P calcola $z = r \cdot s^e \text{ mod } n$ e lo comunica a V
+    \begin{itemize}
+        \item $e = 0 \implies z = r \text{ mod } n = r$ (poichè $r<n$)
+        \item $e = 1 \implies z = r \cdot s \text{ mod } n$
+    \end{itemize}
+    \item V calcola $x = z^2 \mod n$ e controlla se $x == (u \cdot t^e \text{ mod } n)$
+    \begin{itemize}
+        \item se sono uguali si passa alla prossima iterazione
+        \item se sono diversi P è un impostore
+    \end{itemize}
+\end{enumerate}
+Si noti che se tutto è corretto:
+$$                                
+x = z^2 = (r \cdot s^e)^2 \text{ mod } n= r^2 \cdot s^{2 \cdot e}  \text{ mod } n= u \cdot t^{e} \text{ mod } n
+$$
+Se facciamo calcoli distinti otteniamo:
+\begin{align*}
+	x&=z^2\text{ mod }n=r^2 \text{ mod }n=u &e&=0\\
+	x&=z^2 \text{ mod }n=(r\cdot s)^2 \text{ mod }n=r^2 \cdot s^2 \text{ mod }n=u \cdot t \text{ mod } n&e&=1
+\end{align*}
+
+\subsection{Dimostrazione di completezza e correttezza}
+\paragraph{Completezza} La completezza si ottiene con le ultime due formule poste nella pagina precedente! Se $P$ è onesto allora passa tutte le prove e $V$ accetta la dimostrazione.
+\paragraph{Correttezza} Supponiamo che $P$ sia disonesto: non conosce $s$ e l'unica cosa che può fare è tentare di indovinare i valori di $e$ decisi da $V$.
+\begin{itemize}
+    \item \textbf{Se prevede $e = 1$}.
+    
+    Sceglie $r$ casualmente ma invia $u = \frac{r^2}{t} \mod n$, successivamente manderà\\ $z = r \mod n$. V andrà quindi a verificare: $x = z^2 = r^2$, $$u \cdot t = \frac{r^2}{t} \cdot t = r^2 \implies x = u \cdot t \text{ mod } n$$
+    \item \textbf{Se prevede $e = 0$}.
+    
+    Esegue l'algoritmo corretto infatti $x = z^2 = r^2$, $$u \cdot t^e = u = r^2 \implies x = u \text{ mod } n$$
+\end{itemize}
+se prevede bene le formule ottenute sono quelle già calcolate. La probabilità con cui $P$ è in grado di prevedere il corretto valore di $e$ equivale a $\frac{1}{2^k}$, dove $k$ è il numero di iterazioni/challenge a cui viene sottoposto $P$ da $V$.
+
+\subsection{Dimostrazione della proprietà Zero Knowledge}
+\[\boxed{\text{Non abbiamo fatto la dimostrazione}}\]
+
+\subsection{Sicurezza a confronto con altri protocolli}
+Questo protocollo di autenticazione è un protoccollo sicuro da entrambi i lati, sia per chi si deve far riconoscere che per chi autentica le richieste. Pensiamo ad una generica autenticazione tramite crittografia asimmetrica:
+\begin{itemize}
+    \item il client si vuole autenticare presso un server
+    \item il server dispone della chiave pubblica del client, chiede quindi al client di firmare un messagio $r$ casuale
+    \item il client riceve $r$, lo firma e lo restituisce al server
+    \item il server verifica la firma e se è corretta l'autenticazione è avvenuta
+\end{itemize}
+In questo scenario ci si deve fidare del server in quanto si prende un messaggio arbitrario e lo si firma con la propria chiave privata, questo tuttavia potrebbe essere problematico in quanto possono esistere degli input malevoli che permettono di ottenere informazioni circa la chiave privata del client. Un protocollo a zero knowledge invece pone entrambi i lati della comunicazione sullo stesso piano di diffidenza.
+
+\clearpage

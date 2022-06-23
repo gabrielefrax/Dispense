@@ -1,0 +1,72 @@
+\documentclass[11pt]{report}
+\usepackage[margin=1.3in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{amsmath}
+\usepackage{afterpage}
+\usepackage{amssymb}
+\usepackage{svg}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{graphicx,wrapfig,lipsum}
+\usepackage[makeroom]{cancel}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+
+\usepackage{framed} 
+
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+\usepackage[
+type={CC},
+modifier={by-nc-sa},
+version={4.0},
+]{doclicense}
+
+\begin{document}
+	\title{\textbf{Appunti di  Crittografia A.A.2020-2021}\\(basato sulla dispensa di \href{https://github.com/drw0if/Appunti/tree/main/Crittografia}{Aleandro Prudenzano})}
+	\author{Gabriele Frassi (\textbf{g.frassi2@studenti.unipi.it})}
+	%\date{A.A. 2020-2021}
+	\maketitle
+	
+	\noindent \emph{FORSE LO AVETE FATTO A MATEMATICA DISCRETA} (cit. Bernasconi)
+	
+	\doclicenseThis
+		
+	\thispagestyle{empty}
+	\clearpage 
+	
+	\setcounter{page}{1}
+	
+	\tableofcontents
+	
+	\include{sections/1_Introduzione}
+	\include{sections/2_Rimandi_teoria_informazione}
+	\include{sections/3_Teoria_della_casualita}
+	\include{sections/4_Generatori_pseudocasuali}
+	\include{sections/5_Miller-Rabin}
+	\include{sections/6_Cifrari_storici}
+	\include{sections/7_Cifrari_perfetti}
+	\include{sections/8_DES}
+	\include{sections/9_AES}
+	\include{sections/10_Crittografia_a_chiave_pubblica}
+	\include{sections/11_RSA}
+	\include{sections/12_Diffie_Hellman}
+	\include{sections/13_El_Gamal}
+	\include{sections/14_Curve_ellittiche}
+	\include{sections/15_Identificazione_autenticazione_firma_digitale}
+	\include{sections/16_Zero_Knowledge}
+	\include{sections/17_Protocollo_SSL}
+	\include{sections/18_Distribuzione_quantistica_delle_chiavi}
+	\include{sections/19_Protocollo_Bitcoin}
+
+	\appendix 
+
+	\part{Appendici}
+	\include{sections/20_Algebra_Modulare}
+	\include{sections/21_Extra_chiarificatori}
+	\include{sections/22_Esercizi}
+\end{document}

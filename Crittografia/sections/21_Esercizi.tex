@@ -1,0 +1,712 @@
+\chapter{Esercizi (raccolta incompleta)}
+\begin{framed}
+	\noindent \textbf{Esercizio d'esame}.
+	
+	\noindent Un sistema crittografico impiega chiavi private di 46 bit. Per decifrare un messaggio m data la
+	chiave, un programma in assembler impiega un ciclo di 128 istruzioni ripetuto in media tante volte
+	quanti sono i bit che costituiscono m. Impiegando un calcolatore che esegue un’operazione
+	assembler in un tempo medio di 10 n s, indicare in ordine di grandezza quanti anni sarebbero
+	necessari in media per condurre un attacco esaustivo sulle chiavi per un messaggio m di 1000 bit.
+	Indicare i calcoli eseguiti.
+	
+	\paragraph{Risoluzione} La risoluzione passa dal moltiplicare tutti i dati presenti nella consegna: il numero di possibili combinazioni di chiavi ($2^{46}$): il numero di bit del messaggio in chiaro ($1000$), il tempo di esecuzione di un'istruzione Assembler ($10^{-9}$ s), il numero di istruzioni che caratterizzano il ciclo di ogni singolo bit del messaggio in chiaro. 
+	\begin{align*}1000 \cdot 128 \cdot (10 \cdot 10^{-9}) \cdot 2^{46}=10^3 \cdot 2^7 \cdot 10^{-8} \cdot 2^{46}=10^{-5} \cdot 2^{53}=9 \cdot {10}^{10}\text{ s}\end{align*}
+	concludiamo dividendo per il numero di secondi in un anno
+	$$\frac{9 \cdot 10^{10} \text{ s }}{60 \cdot 60 \cdot 24 \cdot 365\text{ s}} \approx 2800\text{ anni}$$
+\end{framed} 
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio d'esame}.
+	
+	\noindent Si vuole generare una sequenza di bit pseudocasuali utilizzando il generatore BBS basato sulla
+	legge: 
+	\begin{align*}
+		x(i)=[x(i-1)]^2 \text{ mod } n&&b(i)=1 \Leftrightarrow "\text{$x(m-i)$ è dispari}"
+	\end{align*}
+	\begin{enumerate}
+		\item Scegliere $n = 11 \cdot 23$ e verificare che 11 e 23 soddisfino i requisiti richiesti dal generatore BBS. 
+		\item Sia $M$ il proprio numero di matricola. Porre $y = M \text{ mod } 100$ e $x(0) = y^2 \text{ mod } n$, e indicare una
+		sequenza di 10 bit generati, riportando i calcoli eseguiti. 
+		\item Discutere se il generatore può considerarsi crittograficamente sicuro. 
+	\end{enumerate}
+	
+	\paragraph{Risoluzione}
+	\begin{enumerate}
+		\item Abbiamo visto poco fa quali sono le condizioni con cui andiamo a determinare i fattori primi nel prodotto $n=p \cdot q$. Verifichiamo supponendo $p=11$ e $q=23$:
+		\begin{itemize}
+			\item $11 \text{ mod } 4 = 3$, verificato
+			\item $23 \text{ mod } 4 = 3$, verificato
+			\item $\text{MCD}\left(2\lfloor\frac{11}{4}\rfloor+1, 2\lfloor\frac{23}{4}\rfloor+1\right)= \text{MCD}(5,11)=1$, verificato
+		\end{itemize}
+		tutte le condizioni richieste da BBS sono verificate.
+		\item Pongo il mio numero di matricola (\emph{solo nella mia testa, non si dice il numero di matricola agli sconosciuti}) e svolgo l'operazione col modulo
+		$$y \text{ mod } 100 = 11 $$
+		procediamo svolgendo tutti i vari calcoli richiesti dall'algoritmo BBS. Per prima cosa il seme
+		$$x_0=x(0)=11^2 \text{ mod } 253=110$$
+		procediamo calcolando gli altri valori (dobbiamo ottenere altri 9 valori)
+		\begin{align*}
+			x_1&=(x_0)^2 \text{ mod } 253 = 110^2 \text{ mod } 253=209\\
+			x_2&=(x_1)^2 \text{ mod } 253 = 209^2 \text{ mod } 253=165\\
+			x_3&=(x_2)^2 \text{ mod } 253 =(165)^2 \text{ mod } 253=154\\
+			x_4&=(x_3)^2 \text{ mod } 253 =(154)^2 \text{ mod } 253=187\\
+			x_5&=(x_4)^2 \text{ mod } 253 =(187)^2 \text{ mod } 253=55\\
+			x_6&=(x_5)^2 \text{ mod } 253 =(55)^2 \text{ mod } 253=242\\
+			x_7&=(x_6)^2 \text{ mod } 253 =(242)^2 \text{ mod } 253=121\\
+			x_8&=(x_7)^2 \text{ mod } 253 =(121)^2 \text{ mod } 253=220\\
+			x_9&=(x_8)^2 \text{ mod } 253 = (220)^2 \text{ mod } 253=77
+		\end{align*}
+		A questo punto concludiamo costruendo la sequenza attraverso il predicato hard-core $b_i$. Ci servono 10 cifre! Ricordarsi che 
+		$$b(i)=1 \Leftrightarrow "\text{$x(m-i)$ è dispari}"$$
+		procediamo, ponendo $m=9$
+		\begin{align*}
+			b_0&=1 \Longleftarrow "\text{$77$ ($x_9$) è dispari}"\text{ è vera}\\
+			b_1&=0 \Longleftarrow "\text{$220$ ($x_8$) è dispari}"\text{ è falsa}\\
+			b_2&=1 \Longleftarrow "\text{$121$ ($x_7$) è dispari}"\text{ è vera}\\
+			b_3&=0 \Longleftarrow "\text{$242$ ($x_6$) è dispari}"\text{ è falsa}\\
+			b_4&=1 \Longleftarrow "\text{$55$ ($x_5$) è dispari}"\text{ è vera}\\
+			b_5&=1 \Longleftarrow "\text{$187$ ($x_4$) è dispari}"\text{ è vera}\\
+			b_6&=0 \Longleftarrow "\text{$154$ ($x_3$) è dispari}"\text{ è falsa}\\
+			b_7&=1 \Longleftarrow "\text{$165$ ($x_2$) è dispari}"\text{ è vera}\\
+			b_8&=1 \Longleftarrow "\text{$209$ ($x_1$) è dispari}"\text{ è vera}\\
+			b_9&=0 \Longleftarrow "\text{$110$ ($x_0$) è dispari}"\text{ è falsa}
+		\end{align*}
+		La sequenza finale è 
+		$$\boxed{1010110110}$$
+		\item Chiaramente i titoli delle sezioni precedenti forniscono già una risposta alla domanda. L'algoritmo è crittograficamente sicuro grazie all'introduzione dei cosiddetti \emph{predicati hard-core}.
+	\end{enumerate}
+\end{framed} 
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio d'esame}.
+	
+	\noindent Sia C una sequenza ottenuta rappresentando in binario ciascuna delle due cifre centrali del
+	numero di matricola del candidato, prendendo per ciascuna di esse i tre bit meno significativi,
+	concatenando questi due gruppi di bit e aggiungendo 1 in testa.
+	\begin{enumerate}
+		\item Eseguire l’operazione: $37^C$ mod 100 per esponenziazioni successive indicando i calcoli eseguiti.
+		\item Spiegare perché tale metodo di calcolo è considerato efficiente. 
+	\end{enumerate}
+	
+	\paragraph{Risoluzione}
+	\begin{enumerate}
+		\item Le cifre centrali del mio numero di matricola sono $3$ e $0$. Le converto singolarmente in binario e le concateno: ottengo $011000$. Aggiungendo in testa un uno ottengo:
+		$c=(1011000)_2=1\cdot 2^6 + 1 \cdot 2^4 + 1 \cdot 2^3 =2^6+2^4+2^3=64+16+8=88$
+		\item Vogliamo calcolare $37^{88} \text{ mod } 100$. Dai calcoli fatti precedenti abbiamo già la scomposizione dell'esponente. 
+		\item Calcoliamo i $k=\lfloor \log_2 88 \rfloor=6$ moduli richiesti dall'algoritmo. 
+		\begin{align*}
+			37^1 \text{ mod } 100&=37 \text{ mod } 100 = 37\,\,\, (\text{\textbf{Bonus}})\\
+			37^2 \text{ mod } 100&=37^2 \text{ mod } 100= 1369 \text{ mod } 100 =69\\
+			37^4 \text{ mod } 100&=69^2 \text{ mod } 100= 4761 \text{ mod } 100 =61\\
+			37^8 \text{ mod } 100&=62^2 \text{ mod } 100= 3721 \text{ mod } 100 =21\\
+			37^{16} \text{ mod } 100&=21^2 \text{ mod } 100= 441 \text{ mod } 100 =41\\
+			37^{32} \text{ mod } 100&=41^2 \text{ mod } 100= 1681 \text{ mod } 100 =81\\
+			37^{64} \text{ mod } 100&=81^2 \text{ mod } 100= 6561 \text{ mod } 100 =61
+		\end{align*}
+		\item Concludiamo
+		\begin{align*}37^{88} \text{ mod } 100 &= 37^{64+16+8} \text{ mod } 100 = 37^{64}37^{16}37^8 \text{ mod } 100=\\&=\left[\left(37^{64}\text{ mod }100\right)\left(37^{16}\text{ mod }100\right)\left(37^{8}\text{ mod }100\right)\right] \text{ mod } 100=\\&=\left[61 \cdot 41 \cdot 21\right]\text{ mod }100=5251 \text{ mod } 100 = 21\end{align*}
+	\end{enumerate}
+\end{framed} 
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent Questo esercizio ha lo scopo di dimostrare che un cifrario affine iterato ha la stessa sicurezza di un
+	cifrario singolo.
+	Si considerino i due cifrari affini:
+	\begin{itemize}
+		\item $C_1(x) = (a_1 \cdot x + b_1) \text{ mod } 26$
+		\item $C_2(x) = (a_2 \cdot x + b_2) \text{ mod } 26$
+	\end{itemize}	
+	Dimostrare che esiste un cifrario affine $C_3$ tale che $C_3(x) = C_2(C_1(x))$.
+	
+	\paragraph{Risoluzione} Nella risoluzione si ricordi le proprietà principali dell'operatore modulo (nell'apposita appendice), che ci permettono di sostituire $x$ in $C_2$ senza dover pensare all'operatore modulo.
+	\begin{align*}C_2(C_1(x))&=(a_2 \cdot C_1(x) + b_2) \text{ mod } 26=(a_2 \cdot (a_1 \cdot x + b_1) + b_2) \text{ mod } 26\\&=(a_2a_1 \cdot x+ a_2b_1)\text{ mod }26=(a_3 \cdot x + b_3)\text{ mod } 26\end{align*}
+	\paragraph{Per i duri di comprendonio (io incluso)} Calcoli in più per riflettere...
+	$$|a_2 \cdot x + b_2|_{26}=||a_2 \cdot x|_{26} + |b_2|_{26}|_{26}=|||a_2|_{26} \cdot |x|_{26}|_{26} + |b_2|_{26}|_{26}=$$
+	$$=|||a_2|_{26} \cdot |a_1\cdot x + b_1|_{26}|_{26} + |b_2|_{26}|_{26}=|a_2 \cdot (a_1\cdot x + b_1) + b_2|_{26}$$
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent Se nei cifrari affini si lavora modulo 27 invece che modulo 26, quante sono le chiavi possibili? 
+	
+	\paragraph{Risoluzione} Alla base di tutti i ragionamenti sta la condizione che $a$ e $27$ devono essere coprimi, cioè
+	$$\text{MCD}(a,27)=1$$
+	\begin{itemize}
+		\item $b$ è un valore $\in [0,26]$, quindi $27$ valori possibili.
+		\item Per quanto riguarda $a$ osserviamo dalla scomposizione che $27=3^3$, dunque tutti i multipli di $3$ sono esclusi. Abbiamo $\phi(27)=18$.
+	\end{itemize}
+	In conclusione
+	$$\text{Numero chiavi} = (18 \cdot 27)-1$$
+	Dobbiamo escludere la coppia $(1,0)$, che non altera il carattere nella cifratura (che comunque mi permette di dire $\text{MCD}(1,27)=1$, \emph{si ringrazia la dispensa di Federico Matteoni per l'osservazione}).
+\end{framed} 
+
+\begin{framed} 
+	\noindent \textbf{Esercizio da esame}. 
+	
+	\noindent Dato un cifrario affine (mod 26), si fa un attacco di tipo testo in chiaro scelto (\emph{chosen plain-text
+		attack}) usando il testo \emph{hahaha}. Il testo cifrato è \emph{nonono}. Determinare la funzione di cifratura.
+	
+	\paragraph{Risoluzione} Ricordiamoci la formula del cifrario affine
+	$$\text{pos}(y)=\left(a \cdot \text{pos}(x)+ b\right) \text{ mod } 26$$
+	Conosciamo due corrispondenze
+	\[\begin{cases}pos(N)=13=\left(a \cdot \text{pos}(H)+b\right)\text{ mod }26=\left(a \cdot 7+b\right)\text{ mod }26\\pos(O)=14=\left(a \cdot \text{pos}(A)+b\right)\text{ mod }26=b\text{ mod }26=b\end{cases}\]
+	quindi
+	\[\begin{cases}13=\left(7a+14\right)\text{ mod }26\\14=b\end{cases} \Longrightarrow \begin{cases}a=11\\b=14\end{cases}\]
+\end{framed} 
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}. Si decifri il seguente crittogramma, sapendo che $h=8$
+	\begin{verbatim}
+		REXETSIH ONSICESI UCIFTFID REHTLIET
+	\end{verbatim}
+	Per risolvere l'esercizio si guardi anche le cose dette più avante relative alla decifrazione. Con $h=8$ sappiamo che abbiamo blocchi da 8 caratteri ciascuno: all'interno di ciascun blocco dobbiamo cercare di ricostruire una frase di significato compiuto. Otteniamo (qua bisogna andare ad occhio davvero, si parta sempre dal primo blocco visto che un blocco non è detto equivalga a una parola di senso compiuto)
+	\begin{verbatim}
+		THISEXER -> 4,7,6,5,3,2,1,0
+		THISEXER CISEISNO TDIFFICU LTEITHER
+	\end{verbatim}
+	Soluzione: \emph{THIS EXERCISE IS NOT DIFFICULT EITHER}.
+\end{framed}
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent Nel codice One-Time Pad si sostituisca l’operatore XOR con OR, o con XNOR.
+	Spiegare, per i due casi, se il protocollo funziona con le stesse proprietà del codice originale.
+	\paragraph{Risoluzione} 
+	\begin{itemize}
+		\item In presenza dell'operatore OR non vale più la proprietà iniettiva: questo significa che a partire da più messaggi $m_k$ è possibile ottenere, con lo stessa chiave, il crittogramma $c$ (non è un problema se messaggi diversi corrispondono allo stesso crittogramma, con chiavi diverse). L'assenza di iniettività provoca ambiguità nella decifrazione. Si ha inoltre inferenza di conoscenza: se un bit è uguale a zero nel crittogramma lo è anche nel messaggio in chiaro. 
+		\item Lo XOR è uguale a $1$ quando i bit sono diversi e $0$ quando i bit sono uguali. Nello XNOR (XOR negato) la regola è invertita. Questo non rende non funzionante il One-Time Pad.
+	\end{itemize}
+\end{framed}
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent In un cifrario A esistono un messaggio m e un crittogramma c tali che: \begin{align*}\text{P}(M = m) = p < \frac{1}{4}&&\text{P}(M = m| C = c) = 1- p\end{align*}Spiegare se A può essere un cifrario perfetto e le conseguenze per un
+	crittoanalista per la coppia $(m,c)$ indicata.
+	
+	\paragraph{Risoluzione} Calcolando la probabilità condizionata otteniamo $1-\frac{1}{4}=\frac{3}{4}$. Il fatto è che le due probabilità sono diverse, e quella appena calcolata inferisce conoscenza (capiamo che è altamente probabile che il crittogramma $c$ rappresenti il messaggio $m$): non abbiamo un cifrario perfetto.
+\end{framed}
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent Sia M il numero di matricola del candidato. Si converta M in una sequenza binaria B trasformando
+	ordinatamente in binario ogni cifra decimale di M, prendendo per ciascuna di esse i tre bit meno
+	significativi e concatenando tali gruppi di tre bit. 
+	\begin{enumerate}
+		\item Indicare la sequenza B, proporre una chiave K di 18 bit ottenuta lanciando idealmente una
+		moneta e trasformare B mediante One-Time Pad utilizzando K.
+		\item  Spiegare se il cifrario può ritenersi sicuro per messaggi binari di lunghezza multipla di 18
+		utilizzando come chiave una ripetizione di K per il numero di volte necessario.
+	\end{enumerate}
+	
+	\paragraph{Risoluzione} L'esercizio è una banale applicazione pratica del \emph{One-Time Pad}. Supponiamo che il numero di matricola sia $M=123456$: dalla concatenazione dei bit otteniamo la seguente sequenza binaria
+	$$\text{001010011100101110}$$
+	\begin{enumerate}
+		\item Nel primo applichiamo letteralmente la funzione di cifratura del One-Time Pad. Supponiamo di aver ottenuto la seguente chiave $K$
+		$$K=011001010110011101$$
+		applichiamo lo XOR ottenendo così il crittogramma
+		$$c=001010011100101110 \oplus 011001010110011101=10011001010110011$$
+		\item No, il cifrario non può ritenersi sicuro se utilizziamo più volte la stessa chiave. Questa cosa è fondamentale: con messaggi cifrari con la stessa chiave possiamo fare il seguente calcolo
+		$$ c_1 \oplus c_2 = m_1 \oplus k \oplus m_2 \oplus k = m_1 \oplus m_2 $$
+		ciò significa individuare eventuali corrispondenze, quindi non avere un cifrario perfetto.
+	\end{enumerate}
+\end{framed}
+
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\begin{enumerate}
+		\item Sia C una sequenza ottenuta rappresentando in binario ciascuna delle due cifre centrali del
+		numero di matricola del candidato, prendendo per ciascuna di esse i tre bit meno significativi e
+		concatenando questi due gruppi di tre bit. Nella fase i-esima del DES, C costituisca la parte
+		iniziale della sequenza in ingresso della S-box. Indicare la sequenza C.
+		\item Indicare (con interi crescenti tra 1 e 32) la sequenza POS di posizioni dei bit di D[i] influenzati
+		da C spiegando come è stato ottenuto il risultato.
+		\item Posto che la parte sinistra S[i-1] del messaggio entrante nella fase i sia una sequenza di 1,
+		indicare il valore dei bit di D[i] di cui alla domanda precedente, riportando i calcoli eseguiti.
+	\end{enumerate}
+	
+	\paragraph{Risoluzione} Per quanto riguarda le tabelle necessarie si considerino le figure attorno a pagina 107 del libro.
+	\begin{enumerate}
+		\item Prendo le cifre centrali del mio numero di matricola: $30$. Ottengo la seguente sequenza $C$
+		$$C=011000$$
+		\item Andiamo ad applicare quanto svolto nella funzione non lineare S-box: per prima cosa passiamo dalla S-box vera e propria, che costituisce la parte non lineare della funzione, e successivamente poniamo l'output della S-box vera e propria in una rete di permutazione $P$. 
+		\begin{itemize}
+			\item Prendiamo la tabella della S-box e la sequenza in ingresso. Considero gli estremi della sequenza come numero di riga e le quattro cifre interne come numero di colonna. Otteniamo
+			\begin{align*}
+				\text{Num. riga} = 0 && \text{Num.colonna}=(1100)_2=12
+			\end{align*}
+			Dalla S-box otteniamo
+			$$\text{S-box}[0,12]=(5)_{10}=(0101)_2$$
+			\item La sequenza ottenuta va in ingresso nella rete di permutazione $P$. Abbiamo detto che la S-box ha manipolato i quattro bit meno significativi: osserviamo dalla tabella che
+			\begin{itemize}
+				\item  il bit in posizione $1$ si trova in posizione $9$
+				
+				\item  il bit in posizione $2$ si trova in posizione $17$
+				
+				\item  il bit in posizione $3$ si trova in posizione $23$
+				
+				\item  il bit in posizione $4$ si trova in posizione $31$
+			\end{itemize}
+		\end{itemize}
+		\item Applichiamo l'operatore XOR, tenendo a mente che l'altra sequenza è caratterizzata da soli $1$
+		\begin{itemize}
+			\item $0 \oplus 1 = 1$
+			\item $1 \oplus 1 = 0$
+			\item $0 \oplus 1 = 1$
+			\item $1 \oplus 1 = 0$
+		\end{itemize} 
+	\end{enumerate} 
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent Si trasformi il sistema DES complementando tutte le uscite della S-box.
+	Sia M il proprio numero di matricola. Si converta M in una sequenza binaria B trasformando
+	ordinatamente in binario ogni cifra decimale di M e prendendo per ciascuna di esse i tre bit meno
+	significativi. Si estenda B fino a contenere in totale 48 bit aggiungendovi zeri a destra: tale
+	sequenza sia l’uscita del blocco EP del DES, con chiave $k[0] =1010\dots10$. 
+	\begin{enumerate}
+		\item Indicare la sequenza B.
+		\item Nella fase 1 del DES determinare il valore dei primi 4 bit a sinistra in uscita dalla S-box,
+		spiegando come è stato ottenuto il risultato.
+		\item Commentare se il DES così modificato appaia o meno palesemente meno sicuro della versione
+		standard.
+	\end{enumerate}
+	
+	\paragraph{Risoluzione} Per quanto riguarda le tabelle necessarie si considerino le figure attorno a pagina 107 del libro.
+	
+	\begin{enumerate}
+		\item Consideriamo come numero di matricole $M=(123456)_{10}$, otteniamo:
+		$$B=001\,010\,011\,100\,101\,110$$
+		portiamo la sequenza a $48$ bit includendo gli zeri richiesti come cifre meno significative
+		$B=001\,010\,011\,100\,101\,110\,000\,000\,000\,000\,000\,000\,000\,000\,000\,000$
+		\item Facciamo le stesse cose spiegate nell'esercizio precedente, in aggiunta complementiamo i bit alla fine.
+		\begin{itemize}
+			\item Il numero di riga è $0$, il numero di colonna è $(0101)_2=(5)_{10}$. Otteniamo
+			$$\text{S-box}[0,10]=(6)_{10}=(0110)_2$$
+			\item Per quanto riguarda la permutazione questa volta non stiamo lavorando sulle cifre meno significative, ma su quelle più significative! Osserviamo che:
+			\begin{itemize}
+				\item  il bit in posizione $32$ si trova in posizione $21$
+				
+				\item  il bit in posizione $31$ si trova in posizione $15$
+				
+				\item  il bit in posizione $30$ si trova in posizione $27$
+				
+				\item  il bit in posizione $29$ si trova in posizione $5$
+			\end{itemize}
+			\item Complemento i bit
+			$$0110 \Longrightarrow 1001$$
+		\end{itemize}
+		\item Abbiamo visto la proprietà del DES con $m,c$ complementati: date le coppie $<m,k>, <\overline{m},\overline{k}>$ otteniamo, rispettivamente, $c$ e $\overline{c}$. Si tenga conto che l'operatore XOR si applica solo a una parte del blocco, quella dove è presente la S-box: introdurre la complementazione significa ottenere, con la seconda coppia, $c$ e non più $\overline{c}$.
+	\end{enumerate}
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent La proprietà di non linearità di qualsiasi cifratura a blocchi è fondamentale per la sua sicurezza.
+	Infatti, si supponga di avere una cifratura lineare a blocchi Cl che cifra blocchi di 128 bit di testo in
+	chiaro in 128 bit di testo cifrato, usando una chiave k (la lunghezza di k è irrilevante). Dunque, per
+	ogni coppia di messaggi m1 e m2 risulta
+	$$\text{Cl}(m_1 \oplus m_2, k)=\text{Cl}(m_1,k) \oplus \text{Cl}(m_2,k)$$
+	Descrivere come un avversario che abbia 128 testi cifrati scelti possa decifrare qualsiasi testo
+	cifrato senza conoscere la chiave segreta k.\\
+	\textbf{NOTA}: “testo cifrato scelto” significa che l’avversario ha la possibilità di scegliere un testo cifrato
+	e ottenerne la decifrazione. In questo caso si hanno 128 coppie di testo in chiaro/testo cifrato e si ha
+	la possibilità di scegliere i testi cifrati.
+	
+	\paragraph{Risoluzione} La non linearità previene attacchi dove il crittoanalista, data una sequenza di crittogrammi scelti in modo oculato, riesce a decifrare crittogrammi senza conoscere la chiave $k$. 
+	\begin{itemize}
+		\item Consideriamo il crittogramma $c$ relativo ad un messaggio $m$
+		Rappresentiamolo nel seguente modo (è a 128 bit)
+		\begin{align*}c=c_1c_2\dots c_{128}&&c=\bigoplus_{i:c_i=1}e^{(i)}\end{align*}
+		dove $i$ è una sequenza caratterizzati da tutti zeri, tranne il bit $i$-esimo uguale ad $1$. Si prenda il seguente esempio 
+		$$C=1011=e^{(1)} \oplus e^{(3)} \oplus e^{(4)} $$
+		\item Sfruttiamo quindi la proprietà delle funzioni di cifratura e decifrazione
+		$$m=D(c,k)=D\left(\bigoplus_{i:c_i=1}e^{(i)},k\right)=\bigoplus_{i:c_i=1} D(e^{(i)}, k)$$
+		\item La cosa calcolata precedente, possibile grazie alla linearità, ci porta ad affermare che è possibile decifrare qualunque messaggio se conosciamo le $128$ sequenze
+		$$f^{(i)}=D(e^{(i)}, k)\,\,\,\,i\in [1,128]$$
+	\end{itemize}
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent La S-box del cifrario AES è composta da 16 blocchi a 8 ingressi e 8 uscite ciascuno. Qual è il	numero totale di possibili funzioni che si potrebbero scegliere per costruire ciascun blocco? 
+	
+	\paragraph{Risoluzione} Negli appunti sulle Reti combinatorie di Reti logiche abbiamo visto il numero di tavole di verità possibili per reti ad $N$ ingressi e un'uscita
+	$$\text{Numero di tavole di verità}=(2)^{2^N}$$
+	Abbiamo $2^8$ combinazioni possibili per l'input, e $2^8$ combinazioni possibili per l'output. Per ogni configurazione di input ho $2^8$ output possibili:
+	$$\text{Numero funzioni}={\left(2^8\right)}^{2^8}$$
+\end{framed} 
+
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\begin{enumerate}
+		\item Spiegare in cosa consiste il cifrario RSA e dimostrarne la correttezza
+		\item Darne un esempio di applicazione impiegando parametri numerici molto piccoli per cifrare il
+		messaggio costituito dalle due cifre meno significative del proprio numero di matricola.
+	\end{enumerate}
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}. 
+	
+	\noindent Posto che si scopra un algoritmo polinomiale per calcolare la funzione di Eulero, spiegare in
+	termini matematici quale influenza la scoperta avrebbe sul cifrario RSA.
+	
+	\paragraph{Risoluzione} Nelle lezioni di teoria la prof.ssa ha insistito moltissimo sul fatto che fattorizzazione e risoluzione della funzione di Eulero siano problemi computazionalmente equivalenti. L'RSA si regge sul fatto che la fattorizzazione sia \emph{One-Way Trapdoor}: risolvere la funzione di Eulero in tempo polinomiale \textbf{\underline{sempre}} significa rompere il cifrario.
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}. 
+	
+	\noindent Si consideri un cifrario RSA con $p = 7, q = 11, e = 13$.
+	\begin{enumerate}
+		\item Determinare il valore della chiave privata d
+		\item Qual è la dimensione dei blocchi per la cifratura?
+		\item Cifrare $100011001010$.
+	\end{enumerate}
+	
+	\paragraph{Risoluzione} 
+	\begin{enumerate}
+		\item Per prima cosa calcoliamo $$\phi(n)=(p-1)\cdot (q-1)=6 \cdot 10=60$$Successivamente individuiamo, attraverso l'algoritmo di Euclide esteso, l'inverso moltiplicativo di $e$ modulo $\phi(n)$ (siamo certi che esiste - e che la soluzione sia unica - visto che $\text{MCD}(13,60)=1$)
+		$$d=e^{-1}\text{ mod }\phi(n)=13^{-1} \text{ mod } 60$$
+		Poniamo per comodità una delle formule tipiche di Euclide esteso
+		$$<d,x,y>=\left<d', y', x'- \left\lfloor \frac{a}{b}\right\rfloor y'\right>$$
+		Procediamo
+		\begin{align*}
+			\text{MCD}(13,60) &&<1,5,-23> \longrightarrow <1, -23, \dots>\\
+			\text{MCD}(60,13) && <1,-3,5> \longrightarrow <1,5,-3-4\cdot 5>=<1,5,-23>\\
+			\text{MCD}(13,8) && <1,2,-3> \longrightarrow <1,-3,2-1\cdot(-3)>=<1,-3,5>\\
+			\text{MCD}(8,5) &&<1,-1,2> \longrightarrow <1,2,-1-1\cdot 2>=<1,2,-3>\\
+			\text{MCD}(5,3) && <1,1,-1> \longrightarrow <1,-1,1-1\cdot(-1)>=<1,-1,2>\\
+			\text{MCD}(3,2) && <1,0,1> \longrightarrow <1,1,0-1\cdot 1>=<1,1,-1>\\
+			\text{MCD}(2,1) && <1,1,0> \longrightarrow <1,0,1-2\cdot 0>=<1,0,1>\\
+			\text{MCD}(1,0) && <1,1,0>
+		\end{align*}
+		Abbiamo trovato l'inverso moltiplicativo
+		$$d=-23 \text{ mod } 60 =37$$
+		\item Per la dimensione dei blocchi basta ricordare la seguente formula, vista nella teoria
+		$$\lfloor \log_2 n \rfloor = \lfloor \log_2 (p\cdot q) \rfloor = \lfloor \log_2 77 \rfloor=6$$
+		\item Per prima cosa dividiamo la sequenza in blocchi di $6$
+		\begin{align*}
+			m_1 = (100011)_2=(35)_{10} && m_2=(001010)_2=(10)_{10}
+		\end{align*}
+		Applichiamo la formula 
+		\begin{align*}
+			m_1 ={35}^{13} \text{ mod }77&&m_2={10}^{13}\text{ mod }77
+		\end{align*}
+		In entrambi i casi applichiamo l'algoritmo delle esponenziazioni veloci.  In entrambi casi scomponiamo $13$ così:
+		$$13=1+8+4=2^0+2^3+2^2$$
+		inoltre $\lfloor \log_2 13 \rfloor=3$.
+		\begin{enumerate}
+			\item Per quanto riguarda $m_1$
+			\begin{align*}
+				{35}^1 \text{ mod }77&=35\\
+				35^2 \text{ mod }77=(35)^2 \text{ mod }77&=70\\
+				35^4 \text{ mod }77=(70)^2 \text{ mod }77&=49\\
+				35^8 \text{ mod }77=(49)^2 \text{ mod }77&=14
+			\end{align*}
+			In conclusione
+			\begin{align*}
+				m_1 ={35}^{13} \text{ mod }77&=\left[(35 \text{ mod } 77)(35^8 \text{ mod }77)(35^4 \text{ mod}77)\right] \text{ mod }77=
+				\\&=(35 \cdot 14 \cdot 49) \text{ mod }77=(63)_{10}=(0111111)_2
+			\end{align*}	
+			\item Per quanto riguarda $m_2$
+			\begin{align*}
+				{10}^1 \text{ mod }77&=10\\
+				10^2 \text{ mod }77=(10)^2 \text{ mod }77&=23\\
+				10^4 \text{ mod }77=(23)^2 \text{ mod }77&=67\\
+				10^8 \text{ mod }77=(67)^2 \text{ mod }77&=23
+			\end{align*}
+			
+			In conclusione
+			\begin{align*}
+				m_1 ={10}^{13} \text{ mod }77&=\left[(19 \text{ mod } 77)(10^8 \text{ mod }77)(10^4 \text{ mod}77)\right] \text{ mod }77=
+				\\&=(10 \cdot 23 \cdot 67) \text{ mod }77=(10)_{10}=(1010)_2
+			\end{align*}	
+		\end{enumerate}
+		A questo punto concateniamo le sequenze ottenute per ottenere il crittogramma finale.
+		$$c=0111111\,001010$$
+	\end{enumerate}
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}. 
+	
+	\noindent Si consideri il cifrario RSA con chiave pubblica $n = 55, e = 7$.
+	\begin{enumerate}
+		\item Cifrare il messaggio $m = 10$.
+		\item Forzare il cifrario trovando $p, q, d$. 
+		\item Decifrare il crittogramma $c = 35$.
+	\end{enumerate}
+	
+	\paragraph{Risoluzione} 
+	\begin{enumerate}
+		\item La consegna non ci fornisce $p$ e $q$, ma direttamente $n$. Poichè abbiamo $n$ ed $e$ (che costituiscono la chiave pubblica) possiamo cifrare il messaggio con l'apposita formula:
+		$$c=m^e \text{ mod } n ={10}^7 \text{ mod } 55=10$$
+		\item La forzatura è possibile perchè sono stati scelti due valori $p,q$ molto bassi. Osservando $n=55$ possiamo dedurre al volo $p=5,q=11$, cioè
+		$$n=p\cdot q = 5 \cdot 11 =55$$
+		A questo punto diventa facile calcolare la funzione di Eulero e quindi trovare $d$
+		$$\phi(n)=(p-1)(q-1)=4\cdot 10=40$$
+		$$d=e^{-1} \text{ mod } \phi(n)=7^{-1} \text{ mod }40=23$$
+		Come al solito facciamo il calcolo ricorrendo ad Euclide esteso.
+		\item Per decifrare il messaggio dobbiamo applicare la formula
+		$$m=c^d \text{ mod } n=35^{23} \text{ mod }55=$$
+		Con l'algoritmo delle esponenziazioni veloci otteniamo
+		$$m=(35 \cdot 15 \cdot 5 \cdot 20) \text{ mod }55=30$$
+	\end{enumerate}
+\end{framed} 
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent Si consideri il protocollo basato sull’algoritmo DH con $g = 3$ e $p = 353$, e siano $x = 97$ e $y = 233$.
+	Calcolare $X, Y$ e la chiave $k$. 
+	
+	\paragraph{Risoluzione} 
+	\begin{itemize}
+		\item La consegna fornisce la coppia $<p,g>$. Sappiamo che il protocollo richiede che i due interlocutori si mettano d'accordo su due valori: un numero intero primo $p$ molto grande e un generatore $g$. Trovare i generatori non è cosa semplice: in molti casi si prendono le coppie suggerite dalle linee guida del NIST (non è un problema se si conosce la coppia adottata dai due interlocutori). 
+		\item $X$ e $Y$ sono i valori calcolati individualmente dai due interlocutori 
+		\begin{align*}
+			X&=g^x \text{ mod } p=3^{97}\text{ mod } 353=40\\
+			Y&=g^y \text{ mod } p=3^{233}\text{ mod } 353=248
+		\end{align*}
+		Si ricorre all'algoritmo delle esponenziazioni successive. 
+		\item La chiave si calcola nei seguenti modi (ciascun interlocutore lo fa per conto suo)
+		\begin{align*}
+			k=X^y \text{ mod }p&&k=Y^x \text{ mod }p
+		\end{align*}
+		cioè 
+		$$k=g^{x\cdot y} \text{ mod } p = 3^{97 \cdot 233} \text{ mod } 353=160$$
+		Anche qua si ricorre all'algoritmo delle esponenziazioni successive. 
+	\end{itemize}
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent Due utenti A, B vogliono costruire una chiave segreta di sessione impiegando il protocollo basato
+	sull’algoritmo DH. A tale scopo concordano su una coppia pubblica di interi $<p,g>$, con $p = 11$ ($p$ è
+	piccolo per costruire il nostro esempio), e $g = 6$.
+	\begin{enumerate}
+		\item Dimostrare che la coppia $<11,6>$ è adatta per il protocollo DH. 
+		\item Posto che A e B scelgano come numeri “casuali” segreti x, y la terza e la quarta cifra del
+		numero di matricola del candidato, creare la chiave di sessione indicando i calcoli eseguiti da
+		A e B. 
+	\end{enumerate}
+	\paragraph{Risoluzione} 
+	\begin{itemize}
+		\item Consideriamo che un valore $p$ piccolo vada bene ai fini della nostra simulazione (normalmente deve essere molto grande), l'importante è che sia primo (e $11$ lo è). Per quanto riguarda $g$ abbiamo detto che deve essere generatore dell'insieme $\mathbb{Z}_p^*$: la verifica mediante tabella è semplice vista la dimensione di $p$.
+		\begin{center}
+			\small
+			\begin{tabular}{c|c c c c c c c c c c }
+				$x$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10   \\
+				\hline
+				$6^{x} \text{ mod } 11$ & 6 & 3 & 7 & 9 & 10 & 5 & 8 & 4 & 2 & 1   \\
+			\end{tabular}
+		\end{center}
+		Abbiamo una permutazione dell'insieme $\mathbb{Z}_p^*$, inoltre si conferma la proprietà che $g^{\phi(n)} \text{ mod } p=1$
+		\item Supponiamo che il nostro numero di matricola sia $654321$. Le cifre centrali sono $x=4$ e $y=3$. Usiamole per trovare $X$ ed $Y$
+		\begin{align*}
+			X=6^4 \text{ mod }11=9&&Y=6^3 \text{ mod }11=7
+		\end{align*}
+		A questo punto si ottiene la chiave nei modi spiegati anche nell'esercizio precedente
+		$k=6^{4\cdot 3} \text{ mod }11=3$
+	\end{itemize}
+\end{framed} 
+
+\clearpage 
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent Il punto $P = (4, 7)$ appartiene alla curva ellittica $y^2	= x^3-5x + 5$ sui numeri reali?
+	
+	\paragraph{Risoluzione} Esercizio banale, ci basta sostituire $x$ ed $y$, verificando che primo e secondo membro coincidano
+	$$7^2=4^3-5 \cdot 4+5 \Longrightarrow 49=49$$
+	Coincidono, quindi il punto appartiene alla curva ellittica.
+\end{framed} 
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent La curva ellittica di equazione $y^2=x^3+10x+5$ definisce un gruppo su $\mathbb{Z}_{17}$ ? E sui reali?
+	
+	\paragraph{Risoluzione} Sia per quanto riguarda l'insieme dei numeri reali che per quanto riguarda $\mathbb{Z}_{17}$ andiamo a verificare che la condizione di gruppo Abeliano sia soddisfatta.
+	\begin{itemize}
+		\item \textbf{Numeri reali}.
+		$$4a^3+27b^2 \neq 0 \Longrightarrow 4(10)^3+27(5)^2=4675$$
+		Possiamo definire il gruppo Abeliano.
+		\item \textbf{Insieme $\mathbf{\mathbb{Z}_{17}}$}.
+		$$(4a^3+27b^2) \text{ mod } 17 \neq 0 \Longrightarrow (4(10)^3+27(5)^2) \text{ mod } 17=0$$
+		La condizione non è soddisfatta.
+	\end{itemize}
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent Nella curva ellittica sui reali $y^2=x^3-36x$, siano $P = (-3, 9)$ e $Q = (-2, 8)$.\\Trovare $P + Q$ e $2P$.
+	
+	\paragraph{Risoluzione} 
+	\begin{itemize}
+		\item Per quanto riguarda $P+Q$ andiamo ad applicare le formule
+		\[\begin{cases}
+			\lambda=\frac{y_Q-y_P}{x_Q-x_P}=\frac{8-9}{-2-(-3)}=\frac{-1}{1}=-1\\
+			x_S=\lambda^2-x_P-x_Q=1-(-3)-(-2)=6\\
+			y_S=\lambda(x_P-x_S)-y_P=-1(-3-6)-9=0
+		\end{cases}
+	\Longrightarrow 
+	P+Q=(6,0)\]
+	\item Per quanto riguarda $2P$ consideriamo il caso $P=Q$. Applichiamo le formule, dove differisce solo $\lambda$
+	\[\begin{cases}
+		\lambda=\frac{3x_P^2+a}{2y_P}=\frac{3  (-3)^2-36}{2\cdot 9}=-\frac{1}{2}\\
+		x_S=\lambda^2-x_P-x_Q=\left(-\frac{1}{2}\right)^2-(-3)-(-3)=\frac{25}{4}\\
+		y_S=\lambda(x_P-x_S)-y_P=-\frac{1}{2}(-3-\frac{25}{4})-9=-\frac{35}{8}
+	\end{cases}
+	\Longrightarrow 
+	2P=\left(\frac{25}{4},-\frac{35}{8}\right)\]
+	
+	\end{itemize}
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent Calcolare gli opposti dei seguenti punti su curva ellittica su $\mathbb{Z}_{17}$: 
+	\begin{align*}P = (5, 8)&& Q = (3, 0)&& R = (0, 6)\end{align*}
+	
+	\paragraph{Risoluzione} Nella risoluzione, considerando la simmetria rispetto a $\lfloor \frac{p}{2} \rfloor$, agiamo esclusivamente su $y$ nel modo seguente
+	\begin{align*}-P = (5, -8 \text{ mod } 17)=(5, 9)&& -Q = (3, 0)&& -R = (0, -6 \text{ mod } 17)=(0, 11)\end{align*}
+\end{framed} 
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}.
+	
+	\noindent Nella curva ellittica $E_{17}(1, 7)$, siano $P = (1, 3)$ e $Q = (2, 0)$. Trovare $P + Q$ e $2P$.
+	
+	\paragraph{Risoluzione} Applichiamo le formule indicate dalla professoressa, ma attenzione al modulo! Soprattutto ricordarsi che quando parliamo di modulo parliamo di numeri interi e positivi (nel trovare $2P$ dobbiamo trovare per forza l'inverso moltiplicativo)!
+	\begin{itemize}
+		\item Per quanto riguarda $P+Q$
+		\[\begin{cases}
+			\lambda=\frac{y_Q-y_P}{x_Q-x_P} \text{ mod } 17=\frac{0-3}{2-1}\text{ mod } 17=-3\text{ mod } 17=14\\
+			x_S=\left(\lambda^2-x_P-x_Q\right)\text{ mod } 17=\left((14)^2-1-2\right)\text{ mod } 17=6\\
+			y_S=\left(\lambda(x_P-x_S)-y_P\right)\text{ mod } 17=\left(14(1-5)-0\right)\text{ mod } 17=12
+		\end{cases}	\]
+		Otteniamo $P+Q=(6,12)$
+		\item Per quanto riguarda $2P$ consideriamo il caso $P=Q$
+		\[\begin{cases}
+			\lambda=\frac{3x_P^2+a}{2y_P} \text{ mod } 17=\frac{3\cdot 1^2+1}{2\cdot 3}\text{ mod } 17=\frac{4}{3} \text{ mod } 17 = \left(4\cdot 3^{-1} \right) \text{ mod } 17=12\\
+			x_S=(\lambda^2-x_P-x_Q) \text{ mod }17=\left({12}^2-1-1\right) \text{ mod }17= 6\\
+			y_S=\left(\lambda(x_P-x_S)-y_P=12(1-6)-3\right) \text{ mod } 17=5
+		\end{cases}\]
+	Nel calcolo di $\lambda$ abbiamo calcolato l'inverso moltiplicativo $3^{-1} \text{ mod }17$, che è uguale a $3$. Otteniamo $2P=(6,5)$
+	\end{itemize}
+	
+\end{framed} 
+
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}. 
+	
+	\noindent Determinare i punti appartenenti alla curva ellittica $E_{11}(1, 6)$
+	
+	\paragraph{Risoluzione} Come abbiamo già detto non è possibile determinare il numero di punti con una formula precisa. Determinare proprio i punti che costituiscono la curva ellittica si ottiene come nell'esempio visto in teoria: individuazione dei residui quadratici e prova di tutti i valori di $x$ possibili. Ricordiamo che la curva è rappresentata nel seguente modo (forma normale di Weierstrass)
+	$$y^2=(x^3+x+6)\text{ mod }11$$
+	\begin{itemize}
+		\item \textbf{Calcolo residui quadratici}.
+		
+		\begin{center}
+			\begin{tabular}{c|c c c c c c c c c c c }
+				$y$ & 0& 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10   \\
+				\hline
+				$y^2 \text{ mod } 11$ & 0&1&4&9&5&3&3&5&9&4&1\\
+			\end{tabular}
+		\end{center}
+		
+		Otteniamo che i residui quadratici sono: $0,1,3,4,5,9$
+		
+		\item \textbf{Test dei possibili valori di $x$}. 
+		
+		Testiamo i possibili valori di $x$, se troviamo corrispondenza con uno dei residui quadratici recuperiamo i valori di $y$ che hanno generato quel residuo quadratico.
+		\begin{align*}
+			x=0&&y^2=6&& \text{Non ho residuo quadratico, no soluzione}\\
+			x=1&&y^2=8&& \text{Non ho residuo quadratico, no soluzione}\\
+			x=2&&y^2=5&&y=4,7 \longrightarrow (2,4),(2,7)\\
+			x=3&&y^2=3&&y=5,6 \longrightarrow (3,5),(3,6)\\
+			x=4&&y^2=8&& \text{Non ho residuo quadratico, no soluzione}\\
+			x=5&&y^2=4&&y=2,9 \longrightarrow (5,2),(5,9)&\\
+			x=6&&y^2=8&& \text{Non ho residuo quadratico, no soluzione}\\
+			x=7&&y^2=4&&y=2,9 \longrightarrow (7,2),(7,9)\\
+			x=8&&y^2=9&&y=3,8 \longrightarrow (8,3),(8,8)\\
+			x=9&&y^2=7&& \text{Non ho residuo quadratico, no soluzione}\\
+			x=10&&y^2=4&&y=2,9 \longrightarrow (10,2),(10,9)\\
+		\end{align*}
+	\end{itemize}
+Conclusioni: l'ordine della curva è $13$ e l'insieme dei punti che costituiscono la curva ellittica il seguente
+\begin{align*}
+	E_{11}(1,6)=\{&(2,4)(2,7),(3,5),(3,6),(5,2),(5,9),(7,2)\\&(7,9),(8,3),(8,8),(10,2),(10,9)\} \cup \{0\}
+\end{align*}
+	
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Esercizio da esame}. 
+	
+	\noindent Nella curva ellittica $E_{23}(14, 12)$, sia $P = (1, 2)$. Calcolare $11 P$
+	
+	\paragraph{Risoluzione} 
+	\begin{enumerate}
+		\item Scomponiamo la costante $k=11$ in potenze di $2$
+		$$11P=(2^0+2^1+2^3)P=(1+2+8)P=P+2P+8P$$
+		\item Calcoliamo i raddoppi. Sappiamo che dovremo calcolare, oltre a $P$ un numero di elementi pari a $\lfloor \log_2 11 \rfloor=3$.
+		\begin{align*}
+			2P&=(6,17)\\
+			4P&=2(2P)=2(6,17)=(0,14)\\
+			8P&=2(4P)=2(0,14)=(6,6)
+		\end{align*}
+		\item Prendiamo solo i raddoppi che ci interessano e sommiamo
+		\begin{align*}
+			11P=P+2P+8P=(1,2)+(6,17)+(6,6)=(2,18)+(6,6)=(1,2)
+		\end{align*}
+	\end{enumerate}
+	I calcoli sono stati ottenuti con le formule indicate dalla professoressa. L'ordine in cui sommiamo gli elementi non è un problema, visto che abbiamo definito un Gruppo Abeliano (dove è garantita in primis la proprietà commutativa).
+\end{framed} 
+
+\begin{framed}
+	\noindent \textbf{Enigma della discordia}. 
+	
+	\noindent Decifrare
+	$$\text{LOCE LOCE LOCE}$$
+	$$\text{LOCE LOCE LOCE LOCE LOCE LOCE LOCE LOCE LOCE}$$
+	Suggerimento: 5,6
+	
+	\paragraph{Risoluzione}  Problema da settimana enigmistica, giochino fatto dalla Bernasconi con gli studenti di un anno accademico passato. Si osservi che:
+	\begin{itemize}
+		\item Prima riga LOCE è scritto tre volte. Seconda riga LOCE è scritto nove volte. Si ottiene TRE e NOVE
+		\item TRE e NOVE, assieme a LOCE, restituiscono la stringa
+		$$\text{TRENOVELOCE} \Longrightarrow \text{TRENO VELOCE}$$
+		\item La parola TRENO è costituita da cinque caratteri, la parola VELOCE da sei (riferimento al suggerimento).
+	\end{itemize}
+\end{framed} 

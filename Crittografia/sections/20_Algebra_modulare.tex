@@ -1,0 +1,241 @@
+\chapter{Nozioni di algebra modulare}
+\section{Utilità dell'algebra modulare in crittografia}
+E' fondamentale in crittografia in quanto:
+\begin{itemize}
+	\item riduce lo spazio dei numeri sui quali si opera e rende più veloci i calcoli
+	\item rende difficili alcuni problemi computazionalmente semplici (o banali) nell'algebra standard
+\end{itemize}
+Nell'algebra modulare ad esempio le funzioni tendono ad essere "imprevedibili". Mettiamo a confronto due funzioni con la seguente tabella:
+\begin{table}[ht!]
+	\centering
+	\small
+	\begin{tabular}{c|c c c c c c c c c c c c}
+		$x$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12  \\
+		\hline
+		$2^{x}$ & 2 & 4 & 8 & 16 & 32 & 64 & 128 & 256 & 512 & 1024 & 2048 & 4096  \\
+		$2^{x} \text{ mod } 13$ & 2 & 4 & 8 & 3 & 6 & 12 & 11 & 9 & 5 & 10 & 7 & 1  \\
+	\end{tabular}
+\end{table}
+La prima funzione appartiene all'algebra normale ed è monotòna (presenta un andamento all'occhio non casuale), mentre la seconda all'algebra modulare è "imprevedibile" (addirittura pare casuale).
+
+\section{Proprietà principali dell'operatore modulo}
+Queste proprietà sono già state viste a Reti logiche
+\begin{align*}
+	|a + b|_m = ||a|_m+|b|_m|_m \Longrightarrow (a+b) \text{ mod } m &= (a \text{ mod } m + b \text{ mod } m) \text{ mod } m\\
+	|a - b|_m = ||a|_m-|b|_m|_m \Longrightarrow (a-b) \text{ mod } m &= (a \text{ mod } m - b \text{ mod } m) \text{ mod } m\\
+	|a \cdot b|_m = ||a|_m\cdot |b|_m|_m \Longrightarrow (a \cdot b) \text{ mod } m &= (a \text{ mod } m \cdot b \text{ mod } m) \text{ mod } m
+\end{align*}
+Mentre questa è una novità
+\begin{align*}
+	a^{r \times s} \text{ mod } m &= (a^r \text{ mod } m)^{s} \text{ mod } m
+\end{align*} 
+
+\section{Relazione di congruenza} 
+$$ a \equiv b \text{ mod } n $$Dati $a, b \geq 0$ interi e $n > 0$ diremo che $a$ è congruo a $b \text{ mod } n$ se e solo se esiste un intero $k$ per cui:
+$$ a = b + k \cdot n $$
+Quindi
+$$ a \text{ mod } n = b \text{ mod } n $$
+\subsection{Differenza tra relazioni di congruenza e di uguaglianza}
+Nella relazione di congruenza mod $n$ si riferisce all'intera relazione, nelle relazioni di uguaglianza invece si riferisce solo al membro dove appare:
+\begin{align*}
+	5&\equiv 8\text{ mod }3 \Longrightarrow 5 \text{ mod } 3 = 8 \text{ mod } 3\\
+	5 &\neq 8 \text{ mod } 3 \Longrightarrow 5 \neq 2\\
+	2&=8 \text{ mod }3
+\end{align*}
+
+\section{Numeri coprimi (ribadiamo, da \textit{Wikipedia})}
+\paragraph{Numeri primi} Un intero si dice primo se divisibile solo per 1 e per se stesso. 
+\paragraph{Numeri coprimi} Gli interi $a$ e $b$ si dicono coprimi (o primi tra loro, nella definizione di primi si parla di un solo numero, nella definizione di coprimi si mettono a confronto due numeri) se e solo se
+essi non hanno nessun divisore comune eccetto $1$ e $-1$ o, in modo equivalente, se 
+$$\text{MCD}(a,b)=1$$
+\paragraph{Esempi}
+\begin{itemize}
+	\item I numeri $6$ e $35$ sono coprimi, poichè $\text{MCD}(6,35)=1$.
+	\item I numeri $6$ e $27$ non sono coprimi, poichè entrambi divisibili anche per $3$. Inoltre
+	$$\text{MCD}(6,27)=3$$
+\end{itemize}
+
+
+\section{Insieme degli interi e insieme degli interi coprimi con $n$} Dato $n \in \mathbb{N}$ definiamo:
+\begin{itemize}
+	\item L'insieme dei numeri interi da $0$ a $n-1$
+	$$Z_{n} = \{ 0, 1, 2, \dots, n-1 \}$$
+	\item Un sottoinsieme degli elementi che contiene solo gli elementi coprimi con $n$
+	$$Z_{n} \supseteq Z_{n}^{*} = \{\text{elementi di $Z_{n}$ coprimi con $n$}\}$$
+	\begin{itemize}
+		\item Se $n$ è primo: $Z_{n}^* = \{1, 2, 3, \dots, n-1\}$
+		\item Se $n$ non è primo $Z_{n}^*$ è \textbf{\underline{computazionalmente difficile da calcolare}}.
+	\end{itemize}
+\end{itemize}
+
+\section{Funzione di Eulero} La funzione di Eulero restituisce la cardinalità dell'insieme dei numeri $\in Z_n$ coprimi ad $n$ ($Z_{n}^{*}$)
+$$ \phi(n) = |Z_{n}^{*}|$$
+\begin{itemize}
+	\item Se $n$ primo $\implies$ $\phi(n) = n-1$ (immediato, visto che il numero è primo e in quel caso tutti gli elementi di $Z_{n}$ tranne lo zero appartengono a $Z_{n}^{*}$)
+	\item Se $n$ è composto la cosa è un po' più complicata
+	$$ \phi(n) = n \cdot \left(1 - \frac{1}{p_1}\right) \cdot \dots \cdot \left(1 - \frac{1}{p_k}\right)$$
+	con $p_1$, \dots, $p_k$ i fattori primi di n presi senza molteplicità.
+	\begin{framed}
+		Nel caso di $n = p \cdot q$ con $p$ e $q$ primi (quindi $n$ semiprimo):
+		$$ \phi(n) =  |Z_{n}^{*}|= (p-1) \cdot (q-1) $$
+	\end{framed}
+\end{itemize}
+
+
+\section{Teorema di Eulero}
+$$ \boxed{\forall n>1, \forall a \in Z_{n}^*:\,\,a^{\phi(n)}\equiv 1 \text{ mod } n} $$
+Prendiamo ad esempio l'insieme $Z_5^{*}$
+\begin{align*}
+	Z_5 &= \{ 0,1,2,3,4\}\\
+	Z_5^{*} &= \{1,2,3,4\}
+\end{align*}
+otteniamo 
+\begin{align*}
+	3^{4} &\equiv 1 \text{ mod } 5\\
+	3^{4} \text { mod } 5 &= 1 \text{ mod } 5\\
+	81 \text { mod } 5 &= 1 \text{ mod } 5 \Longrightarrow 1 = 1
+\end{align*}
+\paragraph{Piccolo teorema di Fermat (corollario del precedente)}
+$\forall n$ primo e $\forall a \in Z_{n}^*$:
+$$ a^{n-1} \equiv 1 \text{ mod } n $$
+La cosa è abbastanza scontata: abbiamo detto che se $n$ è primo allora $\phi(n)=n-1$, dunque otteniamo il corollario semplicemente sostituendo $\phi(n)$.
+
+\subsection{Conseguenze dei risultati: formula per trovare l'inverso}
+$\forall a \in Z_{n}^*$ abbiamo
+\begin{align*}
+	\left[a^{\phi(n)}=a \cdot a^{\phi(n)-1} \right] \longrightarrow a \cdot a^{\phi(n)-1} &\equiv 1 \text{ mod } n\\
+	a \cdot \left(a^{\phi(n)-1} \text{ mod } n\right) &= 1 \text{ mod } n
+\end{align*}
+Sapendo che l'inverso del numero $x$ è un numero $y$ tale che $xy=1$ poniamo
+\begin{align*}
+	a \cdot a^{-1} \equiv 1 \text{ mod } n
+\end{align*}
+cioè
+$$\boxed{a^{-1} = a^{\phi(n)-1} \text{ mod } n} $$
+Quindi $a^{-1} \mod n$ si può calcolare se si conosce la funzione di Eulero $\phi(n)$, quindi se si conoscono $p, q, \dots$ primi fattori di $n$. 
+%\paragraph{Attenzione} In generale nell'algebra modulare l'esistenza dell'inverso non è garantita perché $a^{-1}$ deve essere intero.
+
+\section{Teorema sull'inverso: ammissione e numero di soluzioni}
+L'equazione $$a \cdot x \equiv b \text{ mod } n$$ ammette soluzioni se e solo se $\text{MCD}(a,n)$ divide $b$.
+In questo caso si hanno esattamente $\text{MCD}(a,n)$ soluzioni distinte.
+
+\subsection{Corollario: unicità della soluzione} L'equazione precedente
+$$a \cdot x \equiv b \text{ mod } n$$ ammette un'unica soluzione se e solo se $a,n$ sono coprimi.  
+\paragraph{Inverso con $\mathbf{b=1}$} L'inverso è calcolabile con la seguente formula, vista poco indietro
+$$ \boxed{a^{-1} = a^{\phi(n)-1} \text{ mod } n} $$
+ma per conoscere $\phi(n)$ mi serve fattorizzare, \textbf{e questo è un problema difficile}. La buona notizia è che calcolare l'inverso non è sempre difficile, ricorriamo all'Algoritmo di Euclide.
+\section{Recap delle nozioni affrontate fino ad ora}
+\begin{itemize}
+	\item Abbiamo visto il concetto di numeri coprimi.
+	\item Abbiamo introdotto l'insieme degli interi coprimi rispetto a un numero $n$, accorgendoci delle difficoltà nel calcolare l'insieme qualora $n$ non sia numero primo. Se invece $n$ è primo la cosa è semplice.
+	\item Abbiamo introdotto la funzione di Eulero, che restituisce la cardinalità dell'insieme detto al punto precedente. Permane la stessa difficoltà.
+	\item Abbiamo introdotto il Teorema di Eulero
+	$$ {\forall n>1, \forall a \in Z_{n}^*:\,\,a^{\phi(n)}\equiv 1 \text{ mod } n} $$
+	e il piccolo teorema di Fermat (corollario del precedente), dove con $n$ primo si può dire
+	$$ a^{n-1} \equiv 1 \text{ mod } n $$
+	otteniamo infine una formula per calcolare l'inverso
+	$$a^{-1}=a^{\phi(n)-1} \text{ mod }n$$
+	\item Col teorema sull'inverso abbiamo visto che sono ammesse soluzioni nella seguente formula
+	$$a\cdot x \equiv b \text{ mod }n$$
+	solo se $\text{MCD}(a,n)$ divide $b$, e che MCD consiste nel numero di soluzioni. Con un corollario abbiamo visto che l'unicità della soluzione si ha solo con $a,n$ coprimi, in quel caso la formula per trovare l'inverso è quella calcolata grazie al teorema di Eulero.
+\end{itemize}
+\section{Algoritmo di Euclide esteso} 
+L'algoritmo di Euclide, visto al primo anno, permette di individuare il massimo comune divisore. Nella versione estesa Euclide non restituisce solo il MCD, ma permette di trovare i valori $x,y$ che risolvono la seguente equazione
+$$a \cdot x + b \cdot y = \text{MCD}(a,b)$$
+Prende in input il dividendo $a$, il divisore $b$ e restituisce una terna di valori $<d,x,y>$:
+\begin{itemize}
+	\item $d$ è $\text{MCD}(a,b)$;
+	\item $x$ e $y$ sono i valori in grado di soddisfare l'equazione appena detta.
+\end{itemize}
+\begin{verbatim}
+	Euclide_esteso(a,b):
+	if(b == 0) 	return <a,1,0> 
+	
+	<d', x', y'> = Euclide_esteso(b, a mod b)
+	<d, x, y> = <d', y', x' - floor(a/b) * y'>
+	return <d, x, y>
+\end{verbatim}
+\begin{itemize}
+	\item \textbf{Caso base}. Se il divisore $b$ è uguale a zero, cioè quando abbiamo
+	$$a\cdot x = \text{MCD}(a,0)$$
+	In questo caso, con $b=0$, abbiamo MCD$(a,0)=a$. Segue $x=1$ e il valore restituito col caso base.
+	\item Se non ho subito la chiusura procedo ricorsivamente. Semplifico l'istanza di input: passo come parametri $b$ e $a \text{ mod } b$.
+	\item Una volta risolto il problema dello step precedente si ottiene la terna $<d',x',y'>$. MCD non cambia poichè
+	$$\text{MCD}(a,b)=\text{MCD}(b, a \text{ mod } b)$$
+	Scambiamo $x$ ed $y$ di posizione, inoltre il terzo parametro viene ridotto ulteriormente.
+	$$<d, x, y>=\left<d',y', x'-\left\lfloor \frac{a}{b}\right\rfloor \cdot y'\right>$$
+	\item Immaginatevi la cosa come un subacqueo che si immerge e arriva sul fondale: l'acqua sono tutte le chiamate ricorsive. 
+	\begin{itemize}
+		\item Quando arriva sul fondale ha calcolato il MCD (il valore $d$). 
+		\item Dopo ritorna in superficie, e durante la risalita calcola i valori $<x,y>$ che risolvono l'equazione, in primis $x$ che nel nostro caso è l'inverso moltiplicativo.
+	\end{itemize}
+\end{itemize}
+\subsection{Calcolo dell'inverso con l'algoritmo} 
+\[\boxed{\text{Passo dalla congruenza alla formula risolta con Euclide}}\]
+Possiamo usare quest'algoritmo per il calcolo dell'inverso. Se questa uguaglianza è valida 
+$$ a\cdot x \equiv 1 \text{ mod } n $$
+allora esistenza un valore di $z$ tale che
+$$ a\cdot x = n \cdot z + 1$$
+spostiamo $nz$ nel primo membro ponendo $y=-z$ ed $n=b$
+$$ a\cdot x + b \cdot y = 1 \longrightarrow  a\cdot x + b \cdot y=\text{MCD}(a,b)$$
+$a$ e $b$ sono coprimi, quindi $\text{MCD}(a,b)=1$. Usando l'algoritmo si ottengono $<d, x, y>$, dove $x$ è proprio il nostro inverso. Logico che il MCD, rappresentato dal valore $d$, sarà sempre uguale ad $1$.
+\paragraph{Esempio} Vogliamo calcolare l'inverso di 5 modulo 132 riscrivo l'equazione nella forma vista e applico Euclide esteso:
+$$x = 5^{-1}\text{ mod }132 \longrightarrow 5x+132y=1$$
+Per prima cosa determiniamo tutte le chiamate ricorsive
+\begin{align*}
+	a=5&& b=132&& \text{Non abbiamo ancora $b \neq 0$}\\
+	a=132&& b=5 \text { mod } 132 = 5 && \text{Non abbiamo ancora $b \neq 0$}\\
+	a=5&& b = 132 \text { mod } 5 = 2&& \text{Non abbiamo ancora $b \neq 0$}\\
+	a= 2&& b = 5 \text{ mod } 2=1&& \text{Non abbiamo ancora $b \neq 0$}\\
+	a=1&& b = 2 \text { mod } 1 = 0&& \text{Abbiamo $b = 0$, ci fermiamo qua}
+\end{align*} 
+A questo punto ritorniamo su:
+\begin{itemize}
+	\item L'ultimo è il caso base: $a=1, b=0$. Abbiamo già detto che $\text{MCD}(a,0)=a$, quindi il MCD è $1$. Restituisco $<a, 1, b>$, quindi $<1,1,0>$.
+	\item Saliamo di posizione e applichiamo le formule viste
+	\begin{align*}<a=2,b=1> &&<d'=1,x'=1,y'=0> && \left<d=1,x=0,y= 1- \left\lfloor\frac{2}{1}\right\rfloor\cdot 0 =1\right>\\
+		<a=5,b=2> &&<d'=1,x'=0,y'=1> && \left<d=1,x=1,y= 0- \left\lfloor\frac{5}{2}\right\rfloor\cdot 1=-2 \right>\\
+		<a=132,b=5> &&<d'=1,x'=1,y'=-2> && \left<d=1,x=-2,y= 1- \left\lfloor\frac{132}{5}\right\rfloor\cdot (-2)=53 \right>\\
+		<a=5,b=132> &&<d'=1,x'=-2,y'=53> && \left<d=1, x'=53, y'=\text{\textbf{[Non ci interessa]}}\right>\end{align*}
+	\item Il MCD è $d=1$, mentre l'inverso è $x=53$. Tutto trovato in tempo polinomiale.
+\end{itemize}
+
+
+\section{Algoritmo delle quadrature successive (o esponenziazione veloce)}
+Abbiamo incontrato per la prima volta col test di primalità di Miller-Rabin la necessità di calcolare potenze elevate (nell'algebra modulare). Col seguente algoritmo saremo in grado di ridurre il numero di moltiplicazioni necessarie. 
+\[x=y^z\,\text{mod}\,s\]
+\begin{enumerate}
+	\item Scrivo l'esponente $z$ come una somma di potenze di 2, con $t$ che vale\\$t=\lfloor \log_2 z \rfloor=\theta(\log z)$.
+	\[z=\sum_{i=0}^t k_i \cdot 2^i\,\,\,\,\,\,\,k_i \in \{0,1\}\]
+	
+	\item Calcolo tutte le operazioni 
+	\[y^{2^i}\,\text{mod}\,S\,\,\,\,\,\,\,\,\,1\leq i \leq t=\lceil \log_2 z\rceil\]
+	ciascuna si calcola come quadrato della precedente.
+	\[y^{2^i}\,\text{mod}\,S=\left(y^{2^{i-1}}\right)^2\,\text{mod}\,S\]
+	\item Calcoliamo $x=y^z\,\text{mod}\,S$ col seguente prodotto
+	\[x=\prod_{i:k_i \neq 0}y^{2^i}\,\text{mod}\,S\]
+	dove la condizione esclude tutte le potenze di 2 che non hanno influito sulla scomposizione dell'esponente $z$. 
+\end{enumerate}  
+A livello di costo abbiamo al più $O(t)=\theta(\log_2 z)$ quadrature, quindi $O(\log z)$ moltiplicazioni. Il numero di moltiplicazioni cresce come $\log z$, ciascuna moltiplicazione ha un costo che va col quadrato del numero di cifre: otteniamo un algoritmo complessivamente cubico.
+\[\boxed{\text{Algoritmo polinomiale nella dimensione dei dati}}\]
+
+\paragraph{Esempio} Vogliamo calcolare $x=9^{45}\,\text{mod}\,11$, dove $z=45$
+\begin{enumerate}
+	\item Scomponiamo $z=45=2^5+2^3+2^2+2^0=32+8+4+1$
+	\item Calcoliamo le $k=\lfloor \log_2 45 \rfloor=5$ operazioni
+	\begin{align*}
+		&&9^1\,\text{mod}\,11&=9\,\,\,\,\,\,(\text{\textbf{Bonus}})\\
+		1.&&9^2\,\text{mod}\,11&={(9)}^2\,\text{mod}\,11=4\\
+		2.&&9^4\,\text{mod}\,11&=(4)^2\,\text{mod}\,11=5\\
+		3.&&9^8\,\text{mod}\,11&=(5)^2\,\text{mod}\,11=3\\
+		4.&&9^{16}\,\text{mod}\,11&=(3)^2\,\text{mod}\,11=9\\
+		5.&&9^{32}\,\text{mod}\,11&=(9)^2\,\text{mod}\,11=4
+	\end{align*}
+	\item Selezioniamo quelle che intervengono nella scomposizione dell'esponente: (6), (4), (3), (1). A questo punto possiamo fare i calcoli
+	\begin{align*}
+		y^z\,\text{mod}\,5&=9^{45}\,\text{mod}\,11=9^{32+8+4+1}\,\text{mod}\,11=9^{32}9^89^49^1\,\text{mod}\,11=\\&=\left(\left(9^{32}\,\text{mod}\,11\right)\left(9^{8}\,\text{mod}\,11\right)\left(9^{4}\,\text{mod}\,11\right)\left(9^{1}\,\text{mod}\,11\right)\right)\,\text{mod}\,11=\\&=(4*3*5*9)\,\text{mod}\,11=1
+	\end{align*}
+\end{enumerate}
+Si ricordi da Reti logiche la seguente proprietà dell'operatore modulo
+\[\boxed{|x\cdot y|_\alpha=||x|_\alpha\cdot |y|_\alpha|_\alpha}\]
+La proprietà può essere generalizzata applicandola a un prodotto di $n$ elementi.

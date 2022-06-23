@@ -1,0 +1,120 @@
+\part{Casualità e sequenze pseudocasuali}
+\chapter{Casualità secondo Kolmogorov}
+\section{Necessità di sequenze casuali}
+Data una sequenza binaria vogliamo capire se questa è casuale oppure no. 
+Ne abbiamo bisogno per vari motivi:
+\begin{itemize}
+	\item la generazione della chiave (deve essere imprevedibile);
+	\item algoritmi randomizzati in Crittografia (algoritmi alimentati da sequenze casuali).
+\end{itemize}
+
+\section{Idea generale}
+Poniamoci quindi un quesito: data una sequenza si vuole sapere se essa sia stata generata casualmente o meno. Consideriamo due sequenze binarie:
+\begin{multicols}{2}
+\begin{itemize}
+    \item $h=111111111111\dots 1$
+    \item $h'=101101101011\dots 0$
+\end{itemize}
+\end{multicols}
+\noindent La prima sequenza può facilmente essere descritta come \emph{n volte 1}, mentre la seconda può essere descritta dettandola. La probabilità di generare ognuna le due sequenze è \[P(h)=P(h')=\left(\frac{1}{2}\right)^n=\frac{1}{2^n}\]
+questo perchè la probabilità che esca $0$, ma anche $1$, in una cifra è $1/2$. Supponiamo di creare un algoritmo $A_h$ per generare la prima sequenza:
+$$ A_h:\,<\text{scrivi $n$ volte $1$}> $$
+L'unica cosa che varia è la lunghezza della sequenza $h$, quindi
+\begin{align*}|h| = n && |A_h| = \log_2 |h|+c=\log_2n + c=O(\log n) \end{align*}
+Lavoreremo con la seguente intuizione: \emph{una sequenza è casuale se non ammette un algoritmo di generazione la cui rappresentazione binaria sia più corta di h}. In parole povere: il modo più economico per definire una sequenza casuale è assegnare la sequenza stessa.
+
+\section{Complessità in un sistema di calcolo}
+I sistemi di calcolo (modello di calcolo astratto come una RAM, macchina di Turing, circuito di calcolo…, il luogo dove girano i nostri algoritmi) costituiscono un insieme infinito e numerabile: $S_1,S_2,\dots,S_i,\dots$. Dobbiamo scegliere un sistema di calcolo per mostrare che la casualità è indipendente. Scegliamo $S_i$ e supponiamo di avere un programma $p$ che genera una sequenza $h$ nel sistema di calcolo scelto. 
+\subsection{Complessità di Kolmogorov} 
+Definiamo la complessità di Kolmogorov di $h$ nel sistema $S_i$ come: 
+$$
+    K_{S_i}(h) = \min\{ |p| : S_i(p) = h \}
+$$
+cioè la lunghezza minima di un programma $p$ che nel sistema di calcolo $i-$esimo genera la sequenza $h$. \paragraph{Sequenza irregolare} Se la sequenza è irregolare il programma dovrà contenerla per intero, quindi anche il programma più piccolo che la genera sarà più lungo di $h$:
+$$
+    K_{S_i}(h) = |h| + c_i
+$$
+dove $c_i$ è la parte di programma che trasferisce in output la sequenza (dipende dal sistema di calcolo $i-$esimo scelto).
+
+\subsection{Sistema di calcolo universale}
+Per svincolarci dal sistema di calcolo consideriamo un sistema di calcolo universale $S_u$ che è in grado di simulare tutti i sistemi di calcolo esistenti:
+$$
+    S_i(p) = h \iff S_u(<i, p>) = S_i(p) = h
+$$
+Si ha quindi $q=<i,p>$, programma che genera la sequenza $h$ nel sistema universale $S_u$. Esso è lungo:
+$$
+    |q| = |i| + |p| = \lceil\log_2i\rceil + |p|
+$$ 
+Il primo termine dipende dall'indice del sistema e non dalla sequenza $h$ (è palesemente una costante, adottato un sistema $i$). E' logico derivare:
+$$
+    \forall h, \forall i : K_{S_u}(h) \leq K_{S_i}(h) + c_i
+$$ 
+dove $c_i$ dipende dal sistema di riferimento. La complessità del sistema universale per generare una sequenza $h$ è minore o uguale rispetto alla somma tra una costante e la {complessità del sistema $i-$esimo} per generare la solita sequenza.
+\begin{itemize}
+    \item L'uguaglianza si ha per quelle sequenze $h$ generate per simulazione di $S_i$, nel caso in cui non esistano algoritmi più brevi per $S_u$
+    \item Il minore vale per le sequenze generabili con un programma più corto (per esempio simulando un altro sistema di calcolo $j \neq i$).
+\end{itemize}
+Dimentichiamoci per un attimo della costante: possiamo vedere che la complessità di Kolmogorov di una sequenza in un qualunque sistema di calcolo non potrà mai essere minore della complessità nel sistema di calcolo universale.
+\[K_{S_i}(h) \geq K_{S_u}(h)\] Otteniamo un limite inferiore.
+
+\paragraph{Quindi} Definiamo la complessità di Kolmogorov di una sequenza $h$ è quella nel suo sistema universale:
+$$
+    K(h) = K_{S_u}(h)
+$$
+Eliminiamo il pedice: non facciamo riferimento a un particolare sistema di calcolo.
+
+\section{Definizione di casualità secondo Kolmogorov}
+Una sequenza è casuale secondo Kolmogorov se:
+$$
+    K(h) \geq |h| - \lceil{\log_2|h|}\rceil
+$$
+Si conferma che la casualità è una proprietà della sequenza, indipendente dal sistema di calcolo adottato (e quindi dal modo in cui viene generata la sequenza).
+
+
+\section{Esistenza di sequenze casuali di qualunque lunghezza}
+Fissato la lunghezza $n$ abbiamo $S=2^n$ sequenze aventi tale lunghezza. Poniamo $T$ come numero di sequenze NON casuali di lunghezza $n$. Si vuole dimostrare che \[T < S\]cioè affermare che per ogni lunghezza $n$ esistono sequenze casuali.
+\paragraph{Dimostrazione} Definiamo $N$ come numero di sequenze di lunghezza $ < n - \lceil \log_2n \rceil$ (sequenze che non rispettano la definizione di Kolmogorov), sono esattamente: \[N=\sum_{i = 1}^{n - \lceil \log_2n \rceil} 2^i = 2^{n - \lceil \log_2n \rceil} - 1\]
+Tra queste N sequenze ci sono necessariamente anche le sequenze che descrivono i programmi $p$ per generare tutte le $T$ sequenze non casuali, quindi necessariamente si ha $T \leq N$. Chiaramente abbiamo $N < S$ e quindi
+$$
+T \leq N < S \longrightarrow T < S
+$$
+\paragraph{Osservazione} Al crescere di $n$ le sequenze casuali sono molto maggiori delle sequenze non casuali:
+$$
+    \frac{T}{S} \leq \frac{N}{S} = \frac{2^{n - \lceil \log_2 n \rceil} -1}{2^n} = \frac{1}{2^{\lceil \log n \rceil}} - \frac{1}{2^n} < \frac{1}{2^{\lceil \log n \rceil}}
+$$
+calcolando il limite concludiamo:
+$$
+    \lim_{n \to \infty} \frac{T}{S} = 0 \implies T << S
+$$
+Non solo $T$ è minore di $S$, ma le sequenze casuali per Kolmogorov sono maggioritarie.
+
+$\hfill\blacksquare$
+\section{Verifica della casualità di Kolmogorov problema indecidibile}
+Purtoppo verificare la casualità di Kolmogorov è un problema indecidibile.
+\paragraph{Dimostrazione} Supponiamo per assurdo che esista un algoritmo:
+$$
+    \text{RANDOM}(h) = 
+    \begin{cases}
+        1 $ se $h$ è casuale $\\
+        0 $ altrimenti $
+    \end{cases}
+$$
+Costruiamo l'algoritmo PARADOSSO che non ha parametri di input ed enumera tutte le possibili sequenze binarie in ordine di lunghezza crescente.
+\begin{verbatim}
+PARADOSSO:
+    for binary h <- 1 to inf do{
+        if( |h| - ceil(log2(|h|)) > |p| && RANDOM(h) == 1  )
+           return h
+    }
+\end{verbatim}
+Usiamo dal for non appena individuiamo una sequenza casuale e di dimensione maggiore della lunghezza $|p|$ definita come
+$$
+    |p| = |\text{PARADOSSO}| + |\text{RANDOM}|
+$$
+Si noti che $|p|$ è costante in quanto $n$ viene preso come parametro e non è presente all'interno del programma. Dato che \textbf{\underline{esistono sequenze casuali di qualunque lunghezza}} questo programma si fermerà sicuramente, fornendoci la prima sequenza casuale che soddisfa il vincolo di dimensione.  Attenzione all'assurdo:
+\begin{itemize}
+	\item si richiede che il programma sia di lunghezza breve e generi $h$;
+	\item si richiede che la sequenza $h$ sia casuale.
+\end{itemize}
+\textbf{Con un programma di lunghezza breve non è possibile avere una sequenza $h$ casuale secondo Kolmogorov}. Ne segue quindi che $RANDOM$ non può esistere!
+$\hfill\blacksquare$

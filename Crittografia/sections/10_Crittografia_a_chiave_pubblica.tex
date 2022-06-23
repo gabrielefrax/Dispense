@@ -1,0 +1,164 @@
+\part{Crittografia a chiave pubblica}
+\chapter{Introduzione}
+\section{Problema base: scambio delle chiavi su canali insicuri}
+Abbiamo visto che il One-Time Pad è assolutamente sicuro, ma:
+\begin{itemize}
+	\item richiede una chiave segreta nuova per ogni messaggio;
+	\item la chiave deve essere perfettamente casuale e lunga come il messaggio da cifrare.
+\end{itemize}
+AES ha chiavi più corte, ma necessita comunque di uno scambio di chiavi. Segue la domanda: come si può scambiare una chiave in maniera sicura? La cosa può essere risolta in due modi:
+\begin{itemize}
+	\item protocollo Diffie-Hellman;
+	\item crittografia a chiave pubblica.
+\end{itemize}
+\paragraph{Protocollo Diffie-Hellman (DH)}
+Nel 1976 Diffie ed Hellman con il loro articolo \emph{New Directions in Cryptography} hanno rivoluzionato la crittografia.
+Il protocollo \emph{DH} (Diffie-Hellman) permette la negoziazione di una chiave di sessione senza che le due parti si siano scambiate informazioni in precedenza.
+\section{Schema della crittografia a chiave pubblica}
+In parallelo sempre gli stessi Diffie ed Hellman propongonono lo schema di crittografia a chiave pubblica, senza tuttavia averne una valida implementazione. 
+\paragraph{Chiavi} In questo nuovo schema si hanno due chiavi:
+\begin{itemize}
+    \item una \emph{pubblica} nota a tutti ed utilizzata per cifrare
+    \item una \emph{privata}  nota solo al ricevente usata per decifrare
+\end{itemize}
+Ogni utente avrà quindi una coppia $ <K_{priv}, K_{pub}>$: l'utente rende nota la chiave pubblica e mantiene riservata quella privata. Abbiamo $2N$ chiavi in totale (dove $N$ è il numero di utenti, in contrasto con le $N^2$ chiavi richieste in un cifrario simmetrico).
+
+\paragraph{Funzione di cifratura e decifrazione} La cifratura ha la forma:
+$$ c = C(m, K_{pub}) $$
+mentre la decifrazione ha la forma:
+$$ m = D(c, K_{priv})$$
+Entrambe le funzioni sono note al pubblico, così come le chiave pubblica. La chiave privata è nota al solo destinatario, dunque solo il destinatario è in grado di decifrare il messaggio.
+
+\paragraph{Asimmetricità} Il cifrario si dice asimmetrico perché le due parti hanno ruoli diversi, in particolare non c'è più la condivisione di un segreto comune. 
+
+\subsection{Caratteristiche del cifrario}
+Questi cifrari devono avere alcune caratteristiche:
+\begin{itemize}
+    \item \textbf{il procedimento di cifratura e decifrazione deve essere corretto}, il destinatario deve poter risalire al messaggio in chiaro
+    $$D(C(m, K_{pub}), K_{priv}) = m$$
+    \item \textbf{il sistema deve essere efficiente e sicuro}, cioè 
+    \begin{itemize}
+    	\item la coppia di chiavi deve essere facile da generare, e deve risultare praticamente impossibile che due utenti scelgano la stessa chiave pubblica (altrimenti la chiave privata risulterebbe la stessa);
+    	\item dato un messaggio $m$ e la chiave pubblica $K_{pub}$ deve essere facile per il mittente calcolare il crittogramma
+    	\item dato un crittogramma $c$ e la chiave privata $K_{priv}$ deve essere facile per il destinatario calcolare il messaggio orginale
+    	\item pur conoscendo il crittogramma $c$, la chiave pubblica $K_{pub}$ e le funzioni di cifratura e decifrazione, deve essere difficile per il crittoanalista risalire a $m$. 
+    \end{itemize}
+\end{itemize}
+I due requisiti elencati possono essere soddisfatti ricorrendo alle \emph{funzioni one-way trap-door}, funzioni facili da calcolare ma \textbf{difficili da invertire} senza avere maggiori informazioni.
+\paragraph{RSA} Nel 1977 Rivest, Shamir ed Adleman scoprono una funzione di questo tipo basata sui numeri primi.
+L'algoritmo RSA (\textit{Rivest-Shamir-Adleman}) si basa sul fatto che 
+\begin{itemize}
+	\item dati due numeri primi $p$ e $q$ calcolare il prodotto $n = p \cdot q$, mentre
+	\item dato $n$ è difficile fare la fattorizzazione per trovare $p$ e $q$ (a meno che non si conosca uno dei due fattori).
+\end{itemize}
+\[\boxed{\text{Prima di introdurre l'RSA è necessario introdurre nozioni di algebra modulare.}}\]
+
+\subsection{Vantaggi e svantaggi}
+\begin{itemize}
+	\item \textbf{Pro}:
+	\begin{itemize}
+		\item meno chiavi
+		\item \textbf{\underline{non richiedono lo scambio di chiavi}} (si risolve problema tipico della crittografia simmetrica)
+	\end{itemize}
+	\item \textbf{Con}:
+	\begin{itemize}
+		\item più lenti della cifratura simmetrica
+		\item esposizione ad attacchi \textit{chosen plain-text} 
+		
+		Si può infatti criptare un tot di messaggi $m_1, \dots, m_h$ e vedere se sul canale passa uno dei vari $c_1, \dots, c_h$. Se compare allora sappiamo il messaggio, se non compare allora sappiamo quale messaggio sicuramente non è.
+	\end{itemize}
+\end{itemize}
+Adotteremo un ibrido tra crittografia a chiave pubblica e cifrari simmetrici.
+%\subsection{Cifrari ibridi}
+%\begin{itemize}
+%	\item La crittografia a chiave pubblica risolve il problema dello scambio delle chiavi. Normalmente si utilizza per scambiare la chiavi (trasmissione lenta).
+%	\item Ciò che si usa per criptare il messaggio è l'AES (trasmissione veloce).
+%	\item L'attacco\textit{ chosen plain-text} è risolto con chiavi random difficilmente prevedibili. 
+%	\item La chiave pubblica va estratta da un certificato digitale per evitare attacchi man-in-the-middle in cui terzi si spacciano per il destinatario.
+%\end{itemize}
+\[\boxed{\text{Si legga le nozioni di Algebra modulare in fondo alla dispensa prima di proseguire.}}\]
+\section{Generatori}
+Sia data la seguente funzione
+$$ a^k \text{ mod } n $$
+con $a \in Z_{n}^*$ e $1 \leq k \leq \phi(n)$. Si dice che $a$ è un \emph{generatore di $Z_{n}^*$} se la funzione genera \textbf{\underline{{tutti e soli}}} gli elementi di $Z_{n}^*$.
+\paragraph{Ordine degli elementi} L'ordine degli elementi è difficile da prevedere. L'unica cosa prevedibile è che $1$ si ottiene \textbf{\underline{solo}} quando $$x = \phi(n)$$ poiché sappiamo $a^{\phi(n)} \equiv 1 \mod n$ per il teorema di Eulero.  
+\paragraph{Esempi}
+\begin{itemize}
+	\item $2$ è generatore di $Z_{13}^*$
+	$$Z_{13}^*=\{1,2,3,4,5,6,7,8,9,10,11,12\}\,\,\,\,\phi(13)=12$$
+	$$2^k \text{ mod } 13=2,4,8,3,6,12,11,9,5,10,7,1\,\,\,\,\,\,\,\,\,\,1\leq k \leq 13$$
+	\item $3$ è generatore di $Z_7^*$ 
+	$$Z_7^*=\{1,2,3,4,5,6\}\,\,\,\,\phi(7)=6$$
+	$$3^k \text{ mod } 7=3,2,6,4,5,1\,\,\,\,\,\,\,\,\,\,1\leq k \leq 6$$
+	\item $2$ non genera $Z_7^*$
+	$$2^3 \text{ mod } 7 = 2^6 \text{ mod }7=1$$
+	facendo le potenze con modulo otteniamo $1$ generato per valori diversi da $\phi(n)$, e questo non va bene!
+\end{itemize} 
+\subsection{Teorema sull'esistenza di almeno un generatore} 
+\[\text{Se $n$ è primo allora $Z_{n}^*$ ha almeno un generatore.}\]
+\begin{itemize}
+	\item \textbf{{Non tutti gli elementi sono generatori}}.\\Per $n$ primo non tutti gli elementi di $Z_n^*$ sono suoi generatori (1 non lo è mai).
+	\item \textbf{Numero di generatori}. Per $n$ primo i generatori di $Z_n^*$ sono $\phi(n-1)$.
+\end{itemize}
+\paragraph{Numeri non primi} Non tutti gli $n$ forniscono generatori per $Z_{n}^*$, ad esempio $Z_8^*$.
+
+\subsection{Problema: individuare i generatori}
+Determinare un generatore di $Z_n^*$ con $n$ primo è difficile, si possono provare tutti i numeri in $[2, n-1]$ ma è esponenziale nella dimensione di $n$. Esistono tuttavia algoritmi randomizzati che risolvono il problema con altissima probabilità di successo.
+
+\subsubsection{Problema del logaritmo discreto}
+Il calcolo consiste nel trovare $x$ che risolve:
+$$ a^x \equiv b \text{ mod } n, \text{n primo} $$
+L'equazione ammette soluzioni $\forall b$ se e solo se $a$ è un generatore di $Z_n^*$. Tuttavia non possiamo sapere in che ordine sono generati i valori di $Z_n^*$ quindi per trovare $x$ giusto dobbiamo iterare tutti i valori. 
+
+\paragraph{Rendiamo chiara l'idea} L'algebra modulare complica le cose. Prendiamo la potenza $2^x$: nell'algebra modulare si perde struttura, e quindi la possibilità di costruire algoritmi efficienti.
+\begin{table}[ht!]
+	\centering
+	\small
+	\begin{tabular}{c|c c c c c c c c c c c c}
+		$x$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12  \\
+		\hline
+		$2^{x}$ & 2 & 4 & 8 & 16 & 32 & 64 & 128 & 256 & 512 & 1024 & 2048 & 4096  \\
+		$2^{x} \text{ mod } 13$ & 2 & 4 & 8 & 3 & 6 & 12 & 11 & 9 & 5 & 10 & 7 & 1  \\
+	\end{tabular}
+\end{table}
+\begin{itemize}
+	\item \textbf{Esempio dall'algebra NON modulare}.
+	
+	Sappiamo che
+	$$2^x=512$$
+	e vogliamo trovare $x$. Supponiamo che la soluzione sia $x=8$: facendo i calcoli ci rendiamo conto di avere sbagliato. La cosa non è vana perchè otteniamo informazioni: osservo che $2^8 = 256$, quindi è stato scelto un numero $x$ troppo basso (escludo i valori minori di otto). Provo i numeri maggiori: con $x=9$ otteniamo $512$!
+	
+	\item \textbf{Esempio nell'algebra modulare}.
+	
+	Sappiamo che
+	$$2^x \text{ mod } 13 = 5$$
+	e vogliamo trovare $x$. L'assenza di struttura ordinata mi impedisce di ottenere informazioni dopo aver compiuto errori. Poniamo $x=6$
+	$$2^6 \text{ mod } 13 = 12$$
+	il risultato non è giusto, ma contrariamente a prima non posso escludere i valori di $x$ minori o quelli superiori: devo provarli per forza tutti! A un certo punto troveremo che la soluzione è $x=9$.
+	
+\end{itemize}
+
+\section{Funzioni \textit{one-way trap-door}}
+Le funzioni \emph{one-way trap-door} permettono la ostruzione di cifrari a chiave pubblica: 
+\begin{itemize}
+	\item \emph{one-way} in quanto funzioni facili da calcolare, ma difficili da invertire
+	\item \emph{trap-door} per la possibilità di calcolare l'inverso in presenza di alcune informazioni
+\end{itemize} 
+
+\subsection{Esempio: problema della fattorizzazione} Dati $p, q$ primi è facile fare il prodotto
+$$ n = p \cdot q$$
+Non possiamo dire la stessa cosa se dato $n$ vogliamo trovare $p$ e $q$: è necessario tempo (sub)esponenziale. 
+\paragraph{Trapdoor} Dato $p$ o $q$, invece, si fattorizza velocemente: $q = \frac{n}{p}$, ma anche conoscendo $\phi(n)$ si fattorizza velocemente. Lo si può fare in O($\log_2z$).
+\paragraph{RSA} Questo problema determina la "robsutezza" del cifrario RSA.
+
+\subsection{Esempio: calcolo della radice in modulo}
+Abbiamo visto che è sufficiente tempo polinomiale per trovare $y$ (algoritmo delle quadrature successive)
+$$y = x^z \text{ mod } s $$
+Se $s$ non è primo, tuttavia, calcolare la base $x$ (distinguere dal problema del logaritmo discreto, dove si va a calcolare l'esponente e non la base) richiede tempo esponenziale $$x = y^{\frac{1}{z}} \text{ mod } s$$ 
+\paragraph{Applicazioni} Tutte le volte che chiediamo due interi primi $p$ e $q$ andiamo a calcolare un valore $n$ non primo.
+n 
+\paragraph{Attenzione} Parliamo del calcolo della radice in modulo, non del calcolo della radice e basta! Il calcolo della radice senza modulo è facile da calcolare (si osservi che nell'RSA si deve stare attenti a non avere $m<n$ con $m \text{ mod } n$)
+
+
+
+\paragraph{}
