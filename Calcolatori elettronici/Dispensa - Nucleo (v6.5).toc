@@ -1,0 +1,321 @@
+\babel@toc {italian}{}
+\babel@toc {italian}{}
+\contentsline {chapter}{\numberline {1}Recap orientativo del programma}{6}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Protezione}{14}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Introduzione}{14}{section.2.1}%
+\contentsline {paragraph}{Premessa}{14}{section*.1}%
+\contentsline {paragraph}{Come nasce l'idea}{14}{section*.2}%
+\contentsline {paragraph}{Quanto fatto fino ad ora non basta}{14}{section*.3}%
+\contentsline {paragraph}{Soluzione}{14}{section*.4}%
+\contentsline {paragraph}{Memoria}{15}{section*.5}%
+\contentsline {paragraph}{Codice del kernel}{15}{section*.6}%
+\contentsline {paragraph}{Modalità utente}{15}{section*.7}%
+\contentsline {paragraph}{Motivazioni}{15}{section*.8}%
+\contentsline {paragraph}{Modalità del processore all'avvio}{15}{section*.9}%
+\contentsline {section}{\numberline {2.2}Protezione nel processore Intel}{16}{section.2.2}%
+\contentsline {paragraph}{Cosa si intende con architettura segmentata?}{16}{section*.10}%
+\contentsline {paragraph}{Approfondiamo i meccanismi}{16}{section*.11}%
+\contentsline {subsection}{\numberline {2.2.1}Livello di privilegio attuale del processore (\emph {Current Privilege Level})}{16}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Protezione e interruzioni, cambi di modalità (gate e IRETQ)}{16}{subsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.2.1}Contenuto del gate e \emph {Global Descriptor Table}}{17}{subsubsection.2.2.2.1}%
+\contentsline {paragraph}{A cosa ci serve il selettore di codice?}{17}{section*.12}%
+\contentsline {subsubsection}{\numberline {2.2.2.2}Necessità di una nuova pila}{18}{subsubsection.2.2.2.2}%
+\contentsline {paragraph}{Osservazione}{18}{section*.13}%
+\contentsline {subsubsection}{\numberline {2.2.2.3}Da dove viene preso il puntatore alla nuova pila?}{19}{subsubsection.2.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.3}Livello di privilegio e istruzioni IN/OUT/CLD/STD (flag IOPL)}{19}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}Morale della favola}{19}{subsection.2.2.4}%
+\contentsline {section}{\numberline {2.3}Esempio di programma: passaggio a livello utente (\emph {liv$\_$utente})}{21}{section.2.3}%
+\contentsline {paragraph}{Perchè ci interessa questa cosa?}{21}{section*.14}%
+\contentsline {paragraph}{Esempio}{21}{section*.15}%
+\contentsline {part}{I\hspace {1em}Nucleo multiprogrammato didattico}{23}{part.1}%
+\contentsline {chapter}{\numberline {3}Introduzione}{24}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Concetti base}{24}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Processo}{24}{subsection.3.1.1}%
+\contentsline {paragraph}{Usciamo dalla metafora}{25}{section*.16}%
+\contentsline {paragraph}{Programma vs Processo}{25}{section*.17}%
+\contentsline {paragraph}{Fotogramma}{25}{section*.18}%
+\contentsline {subsection}{\numberline {3.1.2}Primitiva}{25}{subsection.3.1.2}%
+\contentsline {paragraph}{Cosa intendiamo con \emph {primitivo}}{25}{section*.19}%
+\contentsline {paragraph}{Funzioni di libreria?}{26}{section*.20}%
+\contentsline {paragraph}{Tipi primitivi}{26}{section*.21}%
+\contentsline {paragraph}{Cosa faremo a breve}{26}{section*.22}%
+\contentsline {subsection}{\numberline {3.1.3}Contesto}{26}{subsection.3.1.3}%
+\contentsline {paragraph}{E nel nostro caso?}{26}{section*.23}%
+\contentsline {paragraph}{Cambio di contesto}{26}{section*.24}%
+\contentsline {paragraph}{Contesto e primitive}{26}{section*.25}%
+\contentsline {section}{\numberline {3.2}Moduli}{27}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Cartelle}{27}{section.3.3}%
+\contentsline {paragraph}{Modulo sistema}{27}{section*.26}%
+\contentsline {paragraph}{Modulo I/O}{27}{section*.27}%
+\contentsline {paragraph}{Modulo utente}{27}{section*.28}%
+\contentsline {paragraph}{Approccio}{28}{section*.29}%
+\contentsline {section}{\numberline {3.4}Esempio di scrittura del file \emph {utente.cpp}: Hello, world!}{28}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Compilazione e avvio del sistema}{29}{section.3.5}%
+\contentsline {paragraph}{Avvio del sistema}{29}{section*.30}%
+\contentsline {section}{\numberline {3.6}Esempio di programma bloccato dalla protezione}{29}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}\emph {backtrace}}{30}{subsection.3.6.1}%
+\contentsline {section}{\numberline {3.7}Libreria \emph {libce}}{31}{section.3.7}%
+\contentsline {chapter}{\numberline {4}Processo}{32}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Gestione dei processi}{32}{section.4.1}%
+\contentsline {paragraph}{Identificativo del processo}{32}{section*.31}%
+\contentsline {paragraph}{Che differenza c'è tra \emph {printf} e \emph {writeconsole}?}{32}{section*.32}%
+\contentsline {paragraph}{Come si realizza l'astrazione dei processi?}{33}{section*.33}%
+\contentsline {paragraph}{Conseguenza di questa assenza}{34}{section*.34}%
+\contentsline {paragraph}{Creazione di processi}{34}{section*.35}%
+\contentsline {paragraph}{Terminazione dei processi}{34}{section*.36}%
+\contentsline {paragraph}{Sistema come intermediario}{34}{section*.37}%
+\contentsline {paragraph}{Semplificazioni}{34}{section*.38}%
+\contentsline {section}{\numberline {4.2}Processo dal punto di vista dell'utente}{35}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Processo dal punto di vista del programmatore}{35}{section.4.3}%
+\contentsline {paragraph}{Differenze tra routine di sistema e routine di interruzione}{36}{section*.39}%
+\contentsline {subsection}{\numberline {4.3.1}Passaggio a contesto sistema}{36}{subsection.4.3.1}%
+\contentsline {paragraph}{Ribadiamo}{37}{section*.40}%
+\contentsline {subsection}{\numberline {4.3.2}Passaggio da un processo a un altro attraverso routine di sistema}{37}{subsection.4.3.2}%
+\contentsline {paragraph}{Memoria protetta}{37}{section*.41}%
+\contentsline {subsection}{\numberline {4.3.3}Atomicità: perché la routine di sistema deve essere indivisibile?}{37}{subsection.4.3.3}%
+\contentsline {paragraph}{Singole istruzioni}{37}{section*.42}%
+\contentsline {paragraph}{Consistenza delle liste}{38}{section*.43}%
+\contentsline {paragraph}{Cosa facciamo?}{38}{section*.44}%
+\contentsline {paragraph}{Wait, altro problema}{39}{section*.45}%
+\contentsline {subsection}{\numberline {4.3.4}Prima istantanea dello stato di un processo}{39}{subsection.4.3.4}%
+\contentsline {chapter}{\numberline {5}Implementazione dei processi e delle primitive nel modulo sistema}{41}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Premessa: file \emph {include/costanti.h}}{41}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Inizializzazione della \emph {Interrupt Descriptor Table}}{41}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Inizializzazione della \emph {Global Descriptor Table}}{44}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Processo \emph {dummy} e shutdown con \emph {end$\_$program}}{46}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Funzioni \emph {dummy} e \emph {crea$\_$dummy}}{46}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Funzione \emph {end$\_$program}}{46}{subsection.5.4.2}%
+\contentsline {section}{\numberline {5.5}Strutture dati per la gestione dei processi}{47}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Descrittore di processo}{47}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Array dei processi}{47}{subsection.5.5.2}%
+\contentsline {subsection}{\numberline {5.5.3}Indici dei registri nell'array \emph {contesto}}{47}{subsection.5.5.3}%
+\contentsline {paragraph}{Esempio}{48}{section*.46}%
+\contentsline {subsection}{\numberline {5.5.4}Puntatori}{48}{subsection.5.5.4}%
+\contentsline {subsection}{\numberline {5.5.5}Conteggio del numero di processi}{48}{subsection.5.5.5}%
+\contentsline {section}{\numberline {5.6}Funzioni per la manipolazione delle liste}{48}{section.5.6}%
+\contentsline {subsection}{\numberline {5.6.1}Funzione \emph {inserimento$\_$lista}}{48}{subsection.5.6.1}%
+\contentsline {subsection}{\numberline {5.6.2}Funzione \emph {rimozione$\_$lista}}{49}{subsection.5.6.2}%
+\contentsline {subsection}{\numberline {5.6.3}Funzione \emph {inspronti} per la lista \emph {pronti}}{50}{subsection.5.6.3}%
+\contentsline {subsection}{\numberline {5.6.4}Funzione \emph {schedulatore} per la lista \emph {pronti}}{50}{subsection.5.6.4}%
+\contentsline {paragraph}{Attenzione}{50}{section*.47}%
+\contentsline {section}{\numberline {5.7}Funzioni \emph {salva$\_$stato} e \emph {carica$\_$stato}}{50}{section.5.7}%
+\contentsline {subsection}{\numberline {5.7.1}Premessa: offset}{50}{subsection.5.7.1}%
+\contentsline {subsection}{\numberline {5.7.2}salva$\_$stato}{51}{subsection.5.7.2}%
+\contentsline {subsection}{\numberline {5.7.3}carica$\_$stato}{53}{subsection.5.7.3}%
+\contentsline {section}{\numberline {5.8}Primitive}{54}{section.5.8}%
+\contentsline {subsection}{\numberline {5.8.1}Funzione di utilità \emph {liv$\_$chiamante}}{54}{subsection.5.8.1}%
+\contentsline {paragraph}{Perchè non usare \emph {punt$\_$nucleo}?}{55}{section*.48}%
+\contentsline {subsection}{\numberline {5.8.2}Analisi della struttura della primitiva \emph {activate$\_$p}}{55}{subsection.5.8.2}%
+\contentsline {subsubsection}{\numberline {5.8.2.1}Parte Assembler}{55}{subsubsection.5.8.2.1}%
+\contentsline {subsubsection}{\numberline {5.8.2.2}Parte C++}{55}{subsubsection.5.8.2.2}%
+\contentsline {subsubsection}{\numberline {5.8.2.3}Invocazione della primitiva da parte di un utente}{57}{subsubsection.5.8.2.3}%
+\contentsline {paragraph}{Come fa l'utente a chiamare la primitiva?}{57}{section*.49}%
+\contentsline {paragraph}{Effetto dell'esecuzione di INT?}{57}{section*.50}%
+\contentsline {subsection}{\numberline {5.8.3}Esempio di primitiva creata da noi: \emph {getprec}}{57}{subsection.5.8.3}%
+\contentsline {paragraph}{Cosa dobbiamo fare?}{58}{section*.51}%
+\contentsline {paragraph}{Esempio di chiamata della primitiva}{59}{section*.52}%
+\contentsline {chapter}{\numberline {6}Semafori}{60}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Problemi di mutua esclusione e di sincronizzazione}{60}{section.6.1}%
+\contentsline {paragraph}{Altri problemi}{60}{section*.53}%
+\contentsline {section}{\numberline {6.2}Soluzione ai problemi introdotti: le primitive semaforiche}{61}{section.6.2}%
+\contentsline {paragraph}{Metafora}{61}{section*.54}%
+\contentsline {subsection}{\numberline {6.2.1}Risoluzione del problema della mutua esclusione}{61}{subsection.6.2.1}%
+\contentsline {paragraph}{Soluzione cooperativa}{61}{section*.55}%
+\contentsline {subsection}{\numberline {6.2.2}Risoluzione del problema della sincronizzazione}{61}{subsection.6.2.2}%
+\contentsline {paragraph}{Cosa vogliamo fare}{61}{section*.56}%
+\contentsline {paragraph}{Esempio con un buffer}{61}{section*.57}%
+\contentsline {chapter}{\numberline {7}Implementazione dei semafori nel modulo sistema}{63}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Descrittore di semaforo \emph {des$\_$sem}}{63}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Array dei semafori \emph {array$\_$dess}}{63}{section.7.2}%
+\contentsline {paragraph}{Numero massimo di semafori}{63}{section*.58}%
+\contentsline {paragraph}{Numero di semafori allocati}{64}{section*.59}%
+\contentsline {section}{\numberline {7.3}Primitiva per l'allocazione del semaforo}{64}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}Funzione di utilità \emph {alloca$\_$sem}}{64}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.3.2}Primitiva \emph {sem$\_$ini}}{65}{subsection.7.3.2}%
+\contentsline {section}{\numberline {7.4}Primitive per la gestione dei semafori}{65}{section.7.4}%
+\contentsline {subsection}{\numberline {7.4.1}Funzione di utilità \emph {sem$\_$valido}}{65}{subsection.7.4.1}%
+\contentsline {subsection}{\numberline {7.4.2}Primitiva \emph {sem$\_$wait} (presa del gettone)}{66}{subsection.7.4.2}%
+\contentsline {subsection}{\numberline {7.4.3}Primitiva \emph {sem$\_$signal} (rilascio del gettone)}{66}{subsection.7.4.3}%
+\contentsline {chapter}{\numberline {8}Premesse sulla paginazione}{68}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Recap con prime questioni}{68}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Idea di base: tenere insieme informazioni di più processi}{69}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Step successivo: memoria virtuale e indirizzi virtuali}{70}{section.8.3}%
+\contentsline {paragraph}{Cioè?}{70}{section*.60}%
+\contentsline {subsection}{\numberline {8.3.1}Scopo del Kernel}{71}{subsection.8.3.1}%
+\contentsline {paragraph}{Definizione di \emph {kernel} su Wikipedia}{71}{section*.61}%
+\contentsline {section}{\numberline {8.4}Tutto finito?}{72}{section.8.4}%
+\contentsline {chapter}{\numberline {9}Paginazione}{73}{chapter.9}%
+\contentsline {paragraph}{Cosa facciamo?}{73}{section*.62}%
+\contentsline {paragraph}{Traduzione degli indirizzi in una pagina}{73}{section*.63}%
+\contentsline {section}{\numberline {9.1}\emph {Memory Management Unit} (MMU)}{73}{section.9.1}%
+\contentsline {subsection}{\numberline {9.1.1}Passaggio da indirizzo virtuale a indirizzo fisico}{74}{subsection.9.1.1}%
+\contentsline {paragraph}{Attenzione al numero di bit}{74}{section*.64}%
+\contentsline {subsection}{\numberline {9.1.2}Contenuto delle tabelle di corrispondenza}{75}{subsection.9.1.2}%
+\contentsline {paragraph}{Flag per la paginazione su domanda}{75}{section*.65}%
+\contentsline {paragraph}{Bit NX}{75}{section*.66}%
+\contentsline {section}{\numberline {9.2}MMU e modulo sistema}{75}{section.9.2}%
+\contentsline {paragraph}{Cosa faremo}{76}{section*.67}%
+\contentsline {paragraph}{Tabelle di corrispondenza e cambio di processo}{76}{section*.68}%
+\contentsline {paragraph}{Aspetto complicato}{76}{section*.69}%
+\contentsline {section}{\numberline {9.3}Esempio: indirizzi virtuali e fisici in un programma in esecuzione}{76}{section.9.3}%
+\contentsline {paragraph}{Chiediamo l'indirizzo fisico}{77}{section*.70}%
+\contentsline {section}{\numberline {9.4}MMU all'opera}{77}{section.9.4}%
+\contentsline {section}{\numberline {9.5}Tabelle di corrispondenza multilivello (\emph {bitwise trie})}{91}{section.9.5}%
+\contentsline {paragraph}{Quanto è grande una tabella di corrispondenza?}{91}{section*.71}%
+\contentsline {paragraph}{Struttura dati}{91}{section*.72}%
+\contentsline {paragraph}{\emph {bitwise trie}}{92}{section*.73}%
+\contentsline {paragraph}{Domanda sugli indirizzi della struttura dati}{93}{section*.74}%
+\contentsline {paragraph}{Come fa il software ad accedere a qualunque cosa?}{93}{section*.75}%
+\contentsline {subsection}{\numberline {9.5.1}Utente e indirizzi virtuali e fisici}{93}{subsection.9.5.1}%
+\contentsline {paragraph}{stack}{94}{section*.76}%
+\contentsline {subsection}{\numberline {9.5.2}Sistemi e indirizzi virtuali e fisici}{94}{subsection.9.5.2}%
+\contentsline {paragraph}{Soluzione}{94}{section*.77}%
+\contentsline {paragraph}{Sorpresa}{95}{section*.78}%
+\contentsline {paragraph}{Registri}{95}{section*.79}%
+\contentsline {subsection}{\numberline {9.5.3}Esempio non vitale: creazione di un albero di traduzione in Assembler}{97}{subsection.9.5.3}%
+\contentsline {subsubsection}{\numberline {9.5.3.1}Codice Assembler}{97}{subsubsection.9.5.3.1}%
+\contentsline {subsubsection}{\numberline {9.5.3.2}Codice C++}{99}{subsubsection.9.5.3.2}%
+\contentsline {section}{\numberline {9.6}Pagine di dimensione diversa (\emph {Page Size} flag)}{102}{section.9.6}%
+\contentsline {paragraph}{Struttura indirizzo virtuale}{102}{section*.80}%
+\contentsline {paragraph}{Proposta}{103}{section*.81}%
+\contentsline {paragraph}{\emph {Page Size} flag}{103}{section*.82}%
+\contentsline {subsection}{\numberline {9.6.1}Esempio di utilizzo del flag nell'ultimo esempio di esercizio}{103}{subsection.9.6.1}%
+\contentsline {paragraph}{Cosa vogliamo fare?}{103}{section*.83}%
+\contentsline {section}{\numberline {9.7}Cache \emph {Translation Lookaside Buffer} (TLB)}{103}{section.9.7}%
+\contentsline {paragraph}{Soluzione}{103}{section*.84}%
+\contentsline {paragraph}{Cache}{104}{section*.85}%
+\contentsline {paragraph}{Osservazione su alcuni bit}{104}{section*.86}%
+\contentsline {subsection}{\numberline {9.7.1}Riprendiamo l'esempio di esercizio}{105}{subsection.9.7.1}%
+\contentsline {paragraph}{Come mai?}{106}{section*.87}%
+\contentsline {chapter}{\numberline {10}Implementazione della paginazione}{108}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Extra: \emph {typedef} per indirizzi fisici e virtuali}{108}{section.10.1}%
+\contentsline {section}{\numberline {10.2}Costanti in \emph {vm.h} della \emph {libce}}{108}{section.10.2}%
+\contentsline {subsection}{\numberline {10.2.1}Numero massimo di livelli del \emph {trie}}{108}{subsection.10.2.1}%
+\contentsline {subsection}{\numberline {10.2.2}Maschere}{108}{subsection.10.2.2}%
+\contentsline {subsection}{\numberline {10.2.3}Costanti per la manipolazione dei descrittori di pagina e di tabella}{109}{subsection.10.2.3}%
+\contentsline {section}{\numberline {10.3}Funzioni in \emph {vm.h} della \emph {libce}}{109}{section.10.3}%
+\contentsline {subsection}{\numberline {10.3.1}Normalizzazione dell'indirizzo con \emph {norm}}{109}{subsection.10.3.1}%
+\contentsline {subsection}{\numberline {10.3.2}Grandezza di una regione con \emph {dim$\_$region}}{109}{subsection.10.3.2}%
+\contentsline {paragraph}{Definizione}{109}{section*.88}%
+\contentsline {paragraph}{Scopo della funzione}{110}{section*.89}%
+\contentsline {subsection}{\numberline {10.3.3}Funzioni \emph {base} e \emph {limit} per l'indirizzo di base di una regione}{110}{subsection.10.3.3}%
+\contentsline {subsection}{\numberline {10.3.4}Funzioni per lavorare sul \emph {trie}}{110}{subsection.10.3.4}%
+\contentsline {subsubsection}{\numberline {10.3.4.1}Estrazione dell'indirizzo fisico da un'entrata (\emph {extr$\_$IND$\_$FISICO})}{110}{subsubsection.10.3.4.1}%
+\contentsline {paragraph}{Cosa faccio}{111}{section*.90}%
+\contentsline {subsubsection}{\numberline {10.3.4.2}Settaggio dell'indirizzo fisico in un'entrata (\emph {set$\_$IND$\_$FISICO})}{111}{subsubsection.10.3.4.2}%
+\contentsline {subsubsection}{\numberline {10.3.4.3}Indice dell'entrata di un vaddr in una tabella di livello \emph {liv} (\emph {i$\_$tab})}{111}{subsubsection.10.3.4.3}%
+\contentsline {subsubsection}{\numberline {10.3.4.4}Indirizzo di un'entrata di indice \emph {index} da una tabella \emph {tab} (\emph {get$\_$entry})}{111}{subsubsection.10.3.4.4}%
+\contentsline {subsubsection}{\numberline {10.3.4.5}Classe \emph {tab$\_$iter} per la visione del trie (iteratore)}{112}{subsubsection.10.3.4.5}%
+\contentsline {paragraph}{Codice}{112}{section*.91}%
+\contentsline {subsubsection}{\numberline {10.3.4.6}Esempio di uso della classe \emph {tab$\_$iter}}{114}{subsubsection.10.3.4.6}%
+\contentsline {section}{\numberline {10.4}Suddivisione dello spazio di indirizzamento}{115}{section.10.4}%
+\contentsline {paragraph}{Sistema}{115}{section*.92}%
+\contentsline {paragraph}{Utente}{115}{section*.93}%
+\contentsline {paragraph}{Sono necessarie le traduzioni di modulo I/O e pila sistema?}{115}{section*.94}%
+\contentsline {paragraph}{Processi concorrenti, mappaggio comune}{116}{section*.95}%
+\contentsline {paragraph}{Attenzione}{116}{section*.96}%
+\contentsline {section}{\numberline {10.5}Costanti dedicate alla memoria virtuale}{116}{section.10.5}%
+\contentsline {section}{\numberline {10.6}Costanti dedicate alla memoria fisica}{117}{section.10.6}%
+\contentsline {section}{\numberline {10.7}Descrittore di processo}{118}{section.10.7}%
+\contentsline {section}{\numberline {10.8}Aggiornamento del registro CR3 nella \emph {carica$\_$stato}}{118}{section.10.8}%
+\contentsline {section}{\numberline {10.9}Indirizzi virtuali e fisici nei file ELF}{119}{section.10.9}%
+\contentsline {paragraph}{Modulo sistema}{119}{section*.97}%
+\contentsline {paragraph}{Modulo I/O}{119}{section*.98}%
+\contentsline {paragraph}{Modulo utente}{120}{section*.99}%
+\contentsline {section}{\numberline {10.10}Strutture dati per la gestione dei frame}{120}{section.10.10}%
+\contentsline {subsection}{\numberline {10.10.1}Descrittore di frame}{120}{subsection.10.10.1}%
+\contentsline {paragraph}{Uso della union nel descrittore di frame}{120}{section*.100}%
+\contentsline {subsection}{\numberline {10.10.2}Array dei descrittori di frame e numero totale dei frame}{120}{subsection.10.10.2}%
+\contentsline {subsection}{\numberline {10.10.3}Lista dei frame liberi: testa e contatore}{121}{subsection.10.10.3}%
+\contentsline {paragraph}{Numero di frame liberi}{121}{section*.101}%
+\contentsline {subsection}{\numberline {10.10.4}Numero dei frame in $M1$ e in $M2$}{121}{subsection.10.10.4}%
+\contentsline {section}{\numberline {10.11}Funzioni di utilità per il contatore \emph {nvalide} nel \emph {des$\_$frame}}{121}{section.10.11}%
+\contentsline {section}{\numberline {10.12}Funzioni per la gestione della paginazione}{121}{section.10.12}%
+\contentsline {subsection}{\numberline {10.12.1}Funzione per l'occupazione di un frame libero (\emph {alloca$\_$frame})}{121}{subsection.10.12.1}%
+\contentsline {subsection}{\numberline {10.12.2}Funzione per il rilascio di un frame occupato (\emph {rilascia$\_$frame})}{122}{subsection.10.12.2}%
+\contentsline {subsection}{\numberline {10.12.3}Allocazione della tabella con \emph {alloca$\_$tab} (usa \emph {alloca$\_$frame})}{123}{subsection.10.12.3}%
+\contentsline {subsection}{\numberline {10.12.4}Rilascio della tabella con \emph {rilascia$\_$tab} (usa \emph {rilascia$\_$frame})}{123}{subsection.10.12.4}%
+\contentsline {subsection}{\numberline {10.12.5}Settaggio dell'entrata di una tabella con \emph {set$\_$entry}}{123}{subsection.10.12.5}%
+\contentsline {subsection}{\numberline {10.12.6}Copia di descrittori da una tabella a un'altra (\emph {copy$\_$des})}{124}{subsection.10.12.6}%
+\contentsline {subsection}{\numberline {10.12.7}Settaggio di descrittori uguali in una tabella (\emph {set$\_$des})}{124}{subsection.10.12.7}%
+\contentsline {section}{\numberline {10.13}Funzione \emph {map}}{125}{section.10.13}%
+\contentsline {paragraph}{Scopo}{125}{section*.102}%
+\contentsline {paragraph}{Vediamo}{125}{section*.103}%
+\contentsline {chapter}{\numberline {11}Funzione \emph {main} del modulo sistema}{128}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Premessa: funzione \emph {start} (indirizzi moduli, IDT, costruttori, chiamata main)}{128}{section.11.1}%
+\contentsline {section}{\numberline {11.2}Primo processo, inizializzazione di GDT e APIC, associazione del tipo al piedino del timer}{129}{section.11.2}%
+\contentsline {section}{\numberline {11.3}Inizializzazione di $M2$ e indirizzi virtuali dei vari intervalli}{130}{section.11.3}%
+\contentsline {subsection}{\numberline {11.3.1}Funzione \emph {init$\_$frame}}{130}{subsection.11.3.1}%
+\contentsline {subsection}{\numberline {11.3.2}Indirizzi virtuali iniziali e finali di tutti gli intervalli}{131}{subsection.11.3.2}%
+\contentsline {section}{\numberline {11.4}Allocazione di una tabella radice e creazione della finestra sulla memoria fisica}{132}{section.11.4}%
+\contentsline {subsection}{\numberline {11.4.1}Funzione \emph {crea$\_$finestra$\_$fm}}{132}{subsection.11.4.1}%
+\contentsline {paragraph}{Osservazione da ricordare}{134}{section*.104}%
+\contentsline {section}{\numberline {11.5}Creazione dello spazio condiviso}{135}{section.11.5}%
+\contentsline {paragraph}{Dove siamo arrivati}{135}{section*.105}%
+\contentsline {paragraph}{Codice}{135}{section*.106}%
+\contentsline {section}{\numberline {11.6}Registro CR3}{135}{section.11.6}%
+\contentsline {section}{\numberline {11.7}Inizializzazione dello \emph {heap}}{136}{section.11.7}%
+\contentsline {section}{\numberline {11.8}Creazione processo sistema}{136}{section.11.8}%
+\contentsline {subsection}{\numberline {11.8.1}Funzione \emph {crea$\_$processo}, inizializzazione della pila sistema ed eventualmente della pila utente, inizializzazione del \emph {punt$\_$nucleo}}{137}{subsection.11.8.1}%
+\contentsline {section}{\numberline {11.9}Creazione processo dummy}{141}{section.11.9}%
+\contentsline {section}{\numberline {11.10}Schedulatore}{141}{section.11.10}%
+\contentsline {section}{\numberline {11.11}Funzione \emph {salta$\_$a$\_$main}}{142}{section.11.11}%
+\contentsline {section}{\numberline {11.12}Funzione \emph {main$\_$sistema}}{142}{section.11.12}%
+\contentsline {chapter}{\numberline {12}Periferiche}{144}{chapter.12}%
+\contentsline {section}{\numberline {12.1}I/O nel nucleo}{144}{section.12.1}%
+\contentsline {paragraph}{Esempio}{144}{section*.107}%
+\contentsline {paragraph}{Nel nostro caso}{144}{section*.108}%
+\contentsline {subsection}{\numberline {12.1.1}Limitazioni sull'utente}{145}{subsection.12.1.1}%
+\contentsline {subsection}{\numberline {12.1.2}Questioni/problemi delegati alle primitive}{145}{subsection.12.1.2}%
+\contentsline {subsection}{\numberline {12.1.3}Schema di una primitiva di I/O (IN read, OUT write)}{145}{subsection.12.1.3}%
+\contentsline {paragraph}{Primitiva per periferica IN}{145}{section*.109}%
+\contentsline {paragraph}{Primitiva per periferica OUT}{145}{section*.110}%
+\contentsline {subsection}{\numberline {12.1.4}Necessità di più interruzioni, primitive e driver}{146}{subsection.12.1.4}%
+\contentsline {paragraph}{Assunzioni}{146}{section*.111}%
+\contentsline {subsection}{\numberline {12.1.5}Implementazione delle primitive e differenze con le classiche primitive}{147}{subsection.12.1.5}%
+\contentsline {paragraph}{Attenzione}{147}{section*.112}%
+\contentsline {subsubsection}{\numberline {12.1.5.1}Prototipo di descrittore di periferica e array di descrittori}{147}{subsubsection.12.1.5.1}%
+\contentsline {paragraph}{Array di descrittori di periferica}{148}{section*.113}%
+\contentsline {subsubsection}{\numberline {12.1.5.2}Assembler}{148}{subsubsection.12.1.5.2}%
+\contentsline {subsubsection}{\numberline {12.1.5.3}C++}{148}{subsubsection.12.1.5.3}%
+\contentsline {subsection}{\numberline {12.1.6}Implementazione del driver}{149}{subsection.12.1.6}%
+\contentsline {subsubsection}{\numberline {12.1.6.1}Assembler}{149}{subsubsection.12.1.6.1}%
+\contentsline {subsubsection}{\numberline {12.1.6.2}C++}{149}{subsubsection.12.1.6.2}%
+\contentsline {paragraph}{Osservazioni}{150}{section*.114}%
+\contentsline {section}{\numberline {12.2}Il problema del cavallo di Troia, primitiva \emph {access}}{151}{section.12.2}%
+\contentsline {section}{\numberline {12.3}Introduzione del Modulo I/O: perché e vantaggi}{153}{section.12.3}%
+\contentsline {paragraph}{Problema}{153}{section*.115}%
+\contentsline {paragraph}{Soluzione}{153}{section*.116}%
+\contentsline {paragraph}{Cosa ci guadagnamo?}{153}{section*.117}%
+\contentsline {section}{\numberline {12.4}Processi esterni}{153}{section.12.4}%
+\contentsline {paragraph}{Problema}{153}{section*.118}%
+\contentsline {paragraph}{Soluzione}{153}{section*.119}%
+\contentsline {subsection}{\numberline {12.4.1}Creazione del processo esterno}{154}{subsection.12.4.1}%
+\contentsline {subsubsection}{\numberline {12.4.1.1}Primitiva \emph {activate$\_$pe}}{154}{subsubsection.12.4.1.1}%
+\contentsline {subsubsection}{\numberline {12.4.1.2}Array di puntatori a descrittori di processo esterni}{155}{subsubsection.12.4.1.2}%
+\contentsline {subsubsection}{\numberline {12.4.1.3}Funzione \emph {aggiungi$\_$pe}}{155}{subsubsection.12.4.1.3}%
+\contentsline {subsection}{\numberline {12.4.2}Struttura del processo esterno e routine \emph {handler}}{156}{subsection.12.4.2}%
+\contentsline {paragraph}{handler}{156}{section*.120}%
+\contentsline {paragraph}{Dove ricomincia il processo esterno dopo la IRETQ nell'handler?}{157}{section*.121}%
+\contentsline {subsection}{\numberline {12.4.3}Primitiva \emph {wfi}}{157}{subsection.12.4.3}%
+\contentsline {subsection}{\numberline {12.4.4}\ignorespaces Esempio di esecuzione, passaggio tra i vari moduli}{158}{subsection.12.4.4}%
+\contentsline {subsection}{\numberline {12.4.5}Recap}{159}{subsection.12.4.5}%
+\contentsline {paragraph}{Altre primitive sono destinate esclusivamente al modulo I/O}{159}{section*.122}%
+\contentsline {section}{\numberline {12.5}Primitive per operazioni di bus mastering}{160}{section.12.5}%
+\contentsline {subsection}{\numberline {12.5.1}Problemi col bus master}{161}{subsection.12.5.1}%
+\contentsline {chapter}{\numberline {13}Codice del Modulo I/O}{162}{chapter.13}%
+\contentsline {section}{\numberline {13.1}Contenuto della cartella \emph {io}}{162}{section.13.1}%
+\contentsline {paragraph}{Timer}{162}{section*.123}%
+\contentsline {section}{\numberline {13.2}Ritorniamo nella cartella \emph {include}}{162}{section.13.2}%
+\contentsline {subsection}{\numberline {13.2.1}\emph {sys.h}}{162}{subsection.13.2.1}%
+\contentsline {subsection}{\numberline {13.2.2}\emph {io.h}}{163}{subsection.13.2.2}%
+\contentsline {subsection}{\numberline {13.2.3}\emph {sysio.h}}{163}{subsection.13.2.3}%
+\contentsline {section}{\numberline {13.3}File \emph {io.s}}{164}{section.13.3}%
+\contentsline {subsection}{\numberline {13.3.1}Solite inizializzazioni}{164}{subsection.13.3.1}%
+\contentsline {subsection}{\numberline {13.3.2}Interfacce}{164}{subsection.13.3.2}%
+\contentsline {subsection}{\numberline {13.3.3}Gate per le primitive di I/O}{165}{subsection.13.3.3}%
+\contentsline {subsection}{\numberline {13.3.4}Primitive di I/O}{166}{subsection.13.3.4}%
+\contentsline {section}{\numberline {13.4}File \emph {io.cpp}}{166}{section.13.4}%
+\contentsline {subsection}{\numberline {13.4.1}Funzione \emph {main}}{166}{subsection.13.4.1}%
+\contentsline {subsection}{\numberline {13.4.2}Heap del modulo I/O}{167}{subsection.13.4.2}%
+\contentsline {part}{II\hspace {1em}Modello di prova d'esame - Semaforo \emph {mutex}}{168}{part.2}%
