@@ -1,0 +1,60 @@
+
+\chapter{RL - Indirizzamento degli operandi}
+L'indirizzamento di memoria è complicato, ma fondamentale: il processore, per la maggior parte del tempo, copia pezzi di memoria da una parte a un'altra. L'indirizzamento di memoria è possibile sia con l'operando sorgente che con quello destinatario, ma non è possibile farlo in entrambi in una stessa istruzione (l'assemblatore da errore se ci proviamo). 
+\paragraph{Caso più generale} Il caso più generico di indirizzo è il seguente
+\[\text{Indirizzo}=\left|\text{base}+\text{indice}\times\text{scala} \pm \text{displacement}\right|_{2^{32}}\]
+cioè 
+\begin{verbatim}OPCODEsfx +-disp(base,indice,scala)\end{verbatim}
+\begin{itemize}
+	\item la base e l'indice consistono in registri generali a 32 bit. Precedentemente era obbligatorio porre un registro B in base e un registro I in indice: oggi si offre maggiore flessibilità e si possono utilizzare tutti i registri generali.
+	\item scala è una costante che può avere per valore $1$ (valore default se non indicato), $2,4,8$.
+	\item displacement è una costante intera. 
+\end{itemize}
+\subsection*{Indirizzamento di tipo diretto}
+Nelle cose viste fino ad ora abbiamo fatto indirizzamenti di memoria diretti, cioè indirizzamenti con solo il displacement.
+\begin{multicols}{2}
+	\begin{verbatim}OPCODEW 0x00002001\end{verbatim}
+	\[\text{Indirizzo}=\left| \text{0x00002001}\right|_{2^{32}}\]
+\end{multicols}
+\subsection*{Indirizzamento di tipo indiretto}
+\subsubsection*{Registro base} 
+\begin{multicols}{2}
+	\begin{verbatim}OPCODEL (%EBX)
+	\end{verbatim}
+	\[\text{Indirizzo}=\left|\text{\%EBX}\right|_{2^{32}}\]
+\end{multicols}
+\noindent dove EBX consiste nel registro contenente l'indirizzo. Attenzione: è necessario indicare il suffisso di lunghezza, non abbiamo un indirizzamento di registri.
+\clearpage 
+\subsubsection*{Registro indice} 
+\begin{multicols}{2}
+	\begin{verbatim}OPCODEL (,%ESI, 4)\end{verbatim}
+		\[\text{Indirizzo}=\left|\text{\%ESI}\times 4 \right|_{2^{32}}\]
+	\end{multicols}
+	\noindent dove ESI consiste nel registro contenente l'indirizzo. Attenzione: è necessario indicare il suffisso di lunghezza, non abbiamo un indirizzamento di registri.
+	\subsubsection*{Indirizzamento con displacement e registro di modifica}
+	\begin{multicols}{2}
+		\begin{verbatim}OPCODEW 0x002A3A2B (%EDI)\end{verbatim}
+			\[\text{Indirizzo}=\left|\text{\%EDI}+ \text{0x002A3A2B}\right|_{2^{32}}\]
+		\end{multicols}
+		\noindent Indirizzo un operando a 16bit, che si trova nella doppia locazione il cui indirizzo si ottiene sommando (modulo $2^{32}$) il displacement e il contenuto di EDI. Questa cosa è molto versatile per i vettori
+		\subsubsection*{Indirizzamento bimodificato senza displacement}
+		\begin{multicols}{2}
+			\begin{verbatim}OPCODEW (%EBX, %EDI)\end{verbatim}
+				\[\text{Indirizzo}=\left|\text{\%EBX}+\text{\%EDI}\times 1 \right|_{2^{32}}\]
+			\end{multicols}
+			\begin{multicols}{2}
+				\begin{verbatim}OPCODEW (%EBX, %EDI, 8)\end{verbatim}
+					\[\text{Indirizzo}=\left|\text{\%EBX}+\text{\%EDI}\times 8 \right|_{2^{32}}\]
+				\end{multicols}
+				\noindent utilizzo due registri puntatori ponendo, eventualmente, la scala.
+				
+				\subsubsection*{Indirizzamento bimodificato con displacement}
+				In questo caso utilizzeremo tutte le armi a nostra disposizione
+				\begin{multicols}{2}
+					\begin{verbatim}OPCODEB 0x002F9000 (%EBX, %EDI)\end{verbatim}
+						\[\text{Indirizzo}=\left|\text{\%EBX}+\text{\%EDI}\times 1 + \text{0x002F9000}\right|_{2^{32}}\]
+					\end{multicols}
+					\begin{multicols}{2}
+						\begin{verbatim}OPCODEB -0x9000 (%EBX, %EDI)\end{verbatim}
+							\[\text{Indirizzo}=\left|\text{\%EBX}+\text{\%EDI}\times 1 -\text{0x9000} \right|_{2^{32}}\]
+						\end{multicols}
