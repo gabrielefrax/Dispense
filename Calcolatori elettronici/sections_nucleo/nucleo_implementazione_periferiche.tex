@@ -1,0 +1,336 @@
+
+\chapter{Codice del Modulo I/O}
+\section{Contenuto della cartella \emph{io}}
+Nella cartella \emph{io} troviamo i soliti file:
+\begin{itemize}
+	\item \emph{io.cpp},
+	\item \emph{io.s}.
+\end{itemize}
+All'interno abbiamo l'implementazione di primitive e processi esterni per le periferiche che abbiamo già visto, in particolare tastiera, memoria video e hard disk. 
+\paragraph{Timer} Il \emph{timer} è l'unica periferica implementata nel modulo sistema. Serve al sistema per implementare la \emph{delay}.
+\section{Ritorniamo nella cartella \emph{include}}
+In include abbiamo tre file contenenti le dichiarazioni delle primitive offerte. \subsection{\emph{sys.h}}
+\emph{sys.h} contiene le primitive offerte dal modulo sistema, quelle che possono essere usate sia nel modulo utente che nel modulo sistema.
+\small
+\begin{verbatim}
+	extern "C" natl activate_p(void f(natq), natq a, natl prio, natl liv);
+	extern "C" void terminate_p();
+	extern "C" natl sem_ini(int val);
+	extern "C" void sem_wait(natl sem);
+	extern "C" void sem_signal(natl sem);
+	extern "C" void delay(natl n);
+	
+	extern "C" void do_log(log_sev sev, const char* buf, natl quanti);
+	
+	[...]
+\end{verbatim}
+\normalsize
+\subsection{\emph{io.h}}
+\emph{io.h} contiene le primitive implementate dal modulo I/O e rivolte al modulo utente.
+\small
+\begin{verbatim}
+	extern "C" void iniconsole(natb cc);
+	extern "C" natq readconsole(char* buff, natq quanti);
+	extern "C" void writeconsole(const char* buff, natq quanti);
+	
+	extern "C" void readhd_n(void* vetti, natl primo, natb quanti);
+	extern "C" void writehd_n(const void* vetto, natl primo, natb quanti);
+	extern "C" void dmareadhd_n(void* vetti, natl primo, natb quanti);
+	extern "C" void dmawritehd_n(const void* vetto, natl primo, natb quanti);
+	
+	[...]
+\end{verbatim}
+\normalsize
+\begin{itemize}
+	\item Le prime tre sono per tastiera e video.
+	\item Le rimanenti sono per leggere e scrivere nell'hard disk. Si ha la versione in DMA e quella non in DMA per entrambe le operazioni (lettura / scrittura).
+\end{itemize}
+\subsection{\emph{sysio.h}}
+\emph{sysio.h} contiene le primitive che il modulo sistema implementa \textbf{\underline{SOLO}} per il modulo I/O. 
+\small
+\begin{verbatim}
+	extern "C" natl activate_pe(void f(int), int a, natl prio, natl liv, natb type);
+	extern "C" void wfi();
+	extern "C" void abort_p();
+	extern "C" void io_panic();
+	extern "C" paddr trasforma(void* ff);
+	extern "C" bool access(const void* start, natq dim, bool writeable);
+	extern "C" void fill_gate(natl tipo, vaddr f);
+\end{verbatim}
+\normalsize 
+\begin{itemize}
+	\item \textbf{activate$\_$pe} e \emph{wfi} (per le cose dette prima).
+	\item \textbf{abort$\_$p}. Si permette di abortire i processi: la primitiva fa i controlli sui parametri passati dall'utente, se questi non vanno bene si deve abortire. \textbf{Idealmente solo il modulo sistema può abortire i processi}: per questo si fornisce una primitiva.
+	\item \textbf{io$\_$panic} equivalente della \emph{panic} di sistema, se c'è qualche errore che impedisce di andare avanti.
+	
+	\item \textbf{fill$\_$gate}, chiamata dal modulo I/O per associare una propria funzione a una certa entrata della IDT (e quindi a un certo tipo).
+	
+	\item \textbf{access}: primitiva per le verifiche atte a risolvere il problema del cavallo di Troia (nel modulo sistema chiamiamo direttamente \emph{c$\_$access}, qua invochiamo la primitiva - negli esami facciamo la stessa cosa con la \emph{abort}).
+	
+	\item \textbf{trasforma}: primitiva per ottenere, dato un indirizzo fisico e un albero di traduzione, il corrispondente indirizzo virtuale.
+\end{itemize}  
+
+\section{File \emph{io.s}}
+\subsection{Solite inizializzazioni} 
+Come nel modulo sistema dobbiamo fare le solite inizializzazioni di costruttori di oggetti globali.
+\small
+\begin{verbatim}
+	.text
+	.global _start, start
+	_start:
+	start:
+	// chiamiamo eventuali costruttori di oggetti globali
+	movabs $__init_array_start, %rbx
+	movabs $__init_array_end, %r12
+	1:	 cmpq %r12, %rbx
+	je 2f
+	call *(%rbx)
+	addq $8, %rbx
+	jmp 1b
+	// il resto dell'inizializzazione e' scritto in C++
+	2:	 jmp main
+\end{verbatim}
+\normalsize 
+Dopo aver fatto questo ci spostiamo nella funzione \emph{main}, implementata in C++ e contenente il resto delle inizializzazioni.
+\subsection{Interfacce}
+Il modulo presenta le interfacce per chiamare le primitive di sistema (\emph{chiamate di sistema generiche}), esattamente come il modulo sistema.
+\begin{multicols}{2}
+	\small 
+	\begin{verbatim}
+		.global getmeminfo
+		getmeminfo:
+		int $TIPO_GMI
+		ret
+		
+		.global activate_p
+		activate_p:
+		int $TIPO_A
+		ret
+		
+		.global terminate_p
+		terminate_p:
+		int $TIPO_T
+		ret
+		
+		.global sem_ini
+		sem_ini:
+		int $TIPO_SI
+		ret
+		
+		.global sem_wait
+		sem_wait:
+		int $TIPO_W
+		ret
+		
+		.global sem_signal
+		sem_signal:
+		int $TIPO_S
+		ret
+		
+		.global delay
+		delay:
+		int $TIPO_D
+		ret
+		
+		.global do_log
+		do_log:
+		int $TIPO_L
+		ret
+	\end{verbatim}
+	\normalsize 
+\end{multicols}
+\noindent Oltre a queste presenta le interfacce per le primitive da lui implementate (\emph{chiamate di sistema specifiche per il modulo I/O}).
+\begin{multicols}{2}
+	\small 
+	\begin{verbatim}
+		.global activate_pe
+		activate_pe:
+		int $TIPO_APE
+		ret
+		
+		.global wfi
+		wfi:
+		int $TIPO_WFI
+		ret
+		
+		.global abort_p
+		abort_p:
+		int $TIPO_AB
+		ret
+		
+		
+		
+		
+		
+		.global io_panic
+		io_panic:
+		int $TIPO_IOP
+		ret
+		
+		.global fill_gate
+		fill_gate:
+		int $TIPO_FG
+		ret
+		
+		.global trasforma
+		trasforma:
+		int $TIPO_TRA
+		ret
+		
+		.global access
+		access:
+		int $TIPO_ACC
+		ret
+	\end{verbatim}
+	\normalsize 
+\end{multicols}
+\subsection{Gate per le primitive di I/O}
+Come già anticipato la \emph{Interrupt  Descriptor Table} posta nel modulo sistema non è completa. Attraverso il seguente codice inizializziamo i gate rimanenti, necessari per l'esecuzione delle primitive.
+\small 
+\begin{verbatim}
+	// Chiama fill_gate con i parametri specificati
+	.macro fill_io_gate gate off
+	movq $\gate, %rdi
+	movabs $\off, %rax
+	movq %rax, %rsi
+	movq $LIV_UTENTE, %rdx
+	call fill_gate
+	.endm
+	
+	// Inizializzazione dei gate per le primitive di IO
+	.global fill_io_gates
+	fill_io_gates:
+	pushq %rbp
+	movq %rsp, %rbp
+	
+	fill_io_gate	IO_TIPO_RCON	a_readconsole
+	fill_io_gate	IO_TIPO_WCON	a_writeconsole
+	fill_io_gate	IO_TIPO_INIC	a_iniconsole
+	fill_io_gate	IO_TIPO_HDR	a_readhd_n
+	fill_io_gate	IO_TIPO_HDW	a_writehd_n
+	fill_io_gate	IO_TIPO_DMAHDR	a_dmareadhd_n
+	fill_io_gate	IO_TIPO_DMAHDW	a_dmawritehd_n
+	fill_io_gate	IO_TIPO_GMI	a_getiomeminfo
+	
+	leave
+	ret
+\end{verbatim}
+\normalsize 
+Chiamo la \emph{fill$\_$gate} e associo i tipi delle primitive alle funzioni di ingresso \emph{a}. 
+
+\subsection{Primitive di I/O}
+Concludiamo ponendo la parte Assembler delle primitive implementate nel modulo I/O:
+\begin{multicols}{2}
+	\small
+	\begin{verbatim}
+		.extern c_readconsole
+		a_readconsole:
+		call c_readconsole
+		iretq
+		
+		.extern c_writeconsole
+		a_writeconsole:
+		call c_writeconsole
+		iretq
+		
+		.extern c_iniconsole
+		a_iniconsole:
+		call c_iniconsole
+		iretq
+		
+		.extern	c_readhd_n
+		a_readhd_n:
+		call c_readhd_n
+		iretq
+		
+		.extern	c_writehd_n
+		a_writehd_n:
+		call c_writehd_n
+		iretq
+		
+		.extern	c_dmareadhd_n
+		a_dmareadhd_n:
+		call c_dmareadhd_n
+		iretq
+		
+		.extern	c_dmawritehd_n
+		a_dmawritehd_n:
+		call c_dmawritehd_n
+		iretq
+		
+		.extern	c_getiomeminfo
+		a_getiomeminfo:
+		call c_getiomeminfo
+		iretq
+	\end{verbatim}
+	\normalsize 
+\end{multicols}
+\noindent Si osservi che non sono presenti la \emph{carica$\_$stato} e la \emph{salva$\_$stato}: 
+\begin{itemize}
+	\item non dobbiamo usarle perchè le primitive non sono atomiche;
+	\item non possiamo usarle neanche per sbaglio, visto che le due funzioni non sono definite nel modulo I/O.
+\end{itemize}
+Si ha un semplice innalzamento di privilegio, al loro interno possono sospendersi e riprendersi utilizzando primitive di sistema.
+
+\section{File \emph{io.cpp}}
+\subsection{Funzione \emph{main}}
+La funzione \emph{main} viene chiamata dalla \emph{start} vista in \emph{io.s}:
+\small
+\begin{verbatim}
+	extern "C" void fill_io_gates();
+	// eseguita in fase di inizializzazione
+	extern "C" void main(int sem_io) {	
+		fill_io_gates();
+		mem_mutex = sem_ini(1);
+		if (mem_mutex == 0xFFFFFFFF) {
+			panic("impossible creare semaforo mem_mutex");
+		}
+		vaddr end_ = reinterpret_cast<vaddr>(&end);
+		end_ = (end_ + DIM_PAGINA - 1) & ~(DIM_PAGINA - 1);
+		heap_init((void *)end_, DIM_IO_HEAP);
+		if (!console_init())
+		panic("inizializzazione console fallita");
+		if (!hd_init())
+		panic("inizializzazione hard disk fallita");
+		sem_signal(sem_io);
+		terminate_p();
+	}
+\end{verbatim}
+\normalsize 
+\begin{itemize}
+	\item Chiama \emph{fill$\_$io$\_$gates} per porre nella \emph{Interrupt Descriptor Table} i gate per il modulo I/O.
+	\item Crea il semaforo \emph{mem$\_$mutex} con la primitiva \emph{sem$\_$ini}. Lo abbiamo trovato prima nelle funzioni per lo heap.
+	\item Inizializza lo \emph{heap} con la funzione \emph{heap$\_$init}.
+	\item Inizializza la console con \emph{console$\_$init}
+	\item Inizializza l'hard disk con \emph{hd$\_$init}.
+	\item La \emph{sem$\_$signal} è il rilascio di un gettone relativo alla sincronizzazione tra questo processo esterno e il processo sistema che sta inizializzando il modulo sistema. Abbiamo trovato la \emph{sem$\_$wait} nella funzione \emph{main$\_$sistema} del modulo sistema.
+	\item Terminiamo il processo con \emph{terminate$\_$p}.
+\end{itemize}
+
+
+\subsection{Heap del modulo I/O}
+Anche il modulo I/O ha il suo heap. Definiamo gli operator \emph{new} e \emph{delete}.
+\small 
+\begin{verbatim}
+	natl mem_mutex;
+	
+	void* operator new(size_t s) {
+		void *p;
+		
+		sem_wait(mem_mutex);
+		p = alloca(s);
+		sem_signal(mem_mutex);
+		
+		return p;
+	}
+	
+	void operator delete(void* p) {
+		sem_wait(mem_mutex);
+		dealloca(p);
+		sem_signal(mem_mutex);
+	}
+	
+	[...]
+\end{verbatim}
+\normalsize 
+La differenza rispetto al modulo sistema è il ricorso alle primitive semaforiche. Dobbiamo mantenere la mutua esclusione negli operatori (nel modulo sistema non abbiamo questo problema perchè lì le primitive sono atomiche per definizione).  

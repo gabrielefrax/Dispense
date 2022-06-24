@@ -1,0 +1,161 @@
+\chapter{Recap orientativo del programma}
+\begin{itemize}
+	\item \textbf{Protezione}.
+	\begin{itemize}
+		\item Origine del meccanismo. Esempio introduttivo del \emph{batch processing}. Legame tra interruzioni e protezioni.
+		\item Necessità di introdurre ulteriori modifiche hardware: distinzione tra modalità sistema (priva di limiti) e modalità utente (limitata nelle istruzioni eseguibili e negli indirizzi a cui si può accedere).
+		\item \textbf{Implementazione del meccanismo nei processori Intel}.
+		\begin{itemize}
+			\item Architettura segmentata, organizzazione della memoria proposta da Intel e mai diventata popolare. Necessario tenerla a mente per gestire il meccanismo della protezione.
+			\item Registro \emph{Code  Selector} e bit \emph{Current Privilege Level} per verificare l'attuale livello di privilegio del processore.
+			\item Regole per i cambi di modalità: passaggio obbligato dal gate per innalzamento del privilegio, passaggio obbligato dall'istruzione IRETQ per passare a un livello di privilegio minore. Possibilità di mantenere inalterato il livello di privilegio.
+			\item Contenuto del gate: indirizzo di routine, flag $P$ (implementazione della routine), \emph{Descriptor Privilege Level} (livello minimo di privilegio per attraversare il gate), selettore di codice relativo alla \emph{Global Descriptor Table}. Uso della \emph{Global Descriptor Table} per ottenere il livello di privilegio dopo l'attraversamento del gate.
+			\item Passaggio da pila sistema a pila utente e viceversa. Necessità di memorizzare alcuni dati nella pila sistema per poter tornare alla pila utente.
+			\item Uso dei \emph{Task State Segments} per ottenere l'indirizzo della pila sistema, passando dal \emph{Task Register}.
+			\item Flag \emph{IO Privilege Level} (IOPL) relativo a istruzioni  IN/OUT/CLD/STD.
+			\item Esempio di programma: passaggio a livello utente. Programma che gestisce il primo passaggio da pila sistema a pila utente dall'avvio dell'emulatore. Necessità di preparare la pila per tale passaggio.
+		\end{itemize}
+	\end{itemize}
+	\clearpage 
+	\item \textbf{Nucleo multiprogrammato didattico: introduzione}.
+	\begin{itemize}
+		\item Concetti base:
+		\begin{itemize}
+			\item Il processo come sequenza degli stati attraverso cui passa il sistema eseguendo un programma. Differenza tra un processo e un programma, il contenuto di un fotogramma ideale.
+			\item Primitiva come funzionalità base (in un certo senso funzione di libreria) atomica (indivisibile, interruzioni esterne ed eccezioni vietate).
+			\item Contesto come stato del processo, mezzo per la realizzazione delle astrazioni di processo e primitiva. Cambio di contesto nel passaggio da un processo a un altro. Cambio di privilegio con l'invocazione di una primitiva.
+		\end{itemize}
+		\item Divisione del nucleo multiprogrammato didattico in moduli: modulo sistema, modulo I/O e modulo utente. Cartelle principali del nucleo.
+		\item Programma \emph{Hello world!}: esempio di primitiva \emph{writeconsole}.
+		\item Compilazione con comando \emph{make}.
+		\item \emph{backtrace}, ulteriore strumento per il debugging.
+		\item Libreria \emph{libce}: possibilità di usare le cose viste fino ad oggi nel nucleo multiprogrammato didattico.
+		\item Lo stato dei processi: \emph{esecuzione} (unico processo in esecuzione nel processo), \emph{pronto} (processo pronto per andare avanti, ma non in esecuzione) e \emph{bloccato} (processo che non può andare avanti, in attesa di un particolare evento).
+		\item Passaggio dei processi da uno stato a un altro:
+		\begin{itemize}
+			\item schedulazione, passaggio da pronto a esecuzione;
+			\item blocco, passaggio da esecuzione a bloccato;
+			\item risveglio, passaggio da bloccato a esecuzione
+			\item preemption (o prelazione), passaggio da esecuzione a pronto.
+		\end{itemize}
+		L'ultimo non è sempre presente, conseguenze della sua assenza in vecchi sistemi come Windows 98 (non si vedono processi di priorità maggiore finchè il processo in esecuzione non si ferma per qualche motivo).
+		\item Processo dal punto di vista dell'utente: parti condivise (text, data, bss, heap) e parte non condivisa (pila utente e pila sistema).
+		\item Processo dal punto di vista del programmatore: idea di una struttura per memorizzare le informazioni relative a un processo, differenza tra routine di sistema e routine di interruzione (indivisibilità), passaggio a contesto sistema e passaggio da un processo a un altro attraverso routine di sistema (modifica della variabile esecuzione). Perchè è necessario avere una routine atomica.
+		\item Esempio di processo dal punto di vista funzionale: \emph{activate$\_$p}. Inizializzazione della pila sistema (cosa che avviene sempre). Uso dei Task State Segments e del Task Register (unico TSS, spostamento del punt$\_$nucleo nel TSS, si tenga conto che la cosa risulterà semplificata con la paginazione)
+		\item \textbf{Implementazione di processi e primitive}:
+		\begin{itemize}
+			\item File \emph{costanti.h}
+			\item Inizializzazione della \emph{Interrupt Descriptor Table} per gestire i gate. Inizializzazione in parte immediata e in parte rimandata ad altri momenti (si pensi alla parte relativa al modulo I/O). Uso dell'istruzione LIDT per porre l'indirizzo della tabella nel registro IDTR. Priorità massima (basata sul tipo, ricordare) data al timer. Un gate per primitiva limitante: alternativa moderna, ma non problema nel nostro nucleo (poche primitive).
+			\item Inizializzazione della \emph{Global Descriptor Table}. Uso diverso rispetto a quanto concepito dalla Intel, entrata per gestire il passaggio da modalità utente a modalità sistema, entrata per attraversare il gate e rimanere in modalità utente. Inizializzazione del \emph{Task State Segment} (unico elemento, che uso per porre l'indirizzo della pila sistema).
+			\item Processo dummy e utilità (gestire situazione dove tutti i processi sono bloccati e non c'è altro da fare). Funzioni di utilità per creare il processo dummy e per terminare il tutto nel caso in cui i processi risultino tutti terminati (si provoca la tripla eccezione).
+			\item Descrittore di processo, array di processi, variabile per conteggiare il numero di processi attivi.
+			\item Funzioni per la manipolazione delle liste: inserimento di un descrittore di processo in una lista sulla base delle priorità (con logica FIFO a parità di precedenza), rimozione della testa di una lista, funzione \emph{inspronti} per l'inserimento di un processo in esecuzione nella lista pronti, funzione schedulatore per porre nella variabile esecuzione la testa della lista pronti. Lo schedulatore non comporta un cambio di processo immediato (quello si avrà con la carica$\_$stato, tenerlo a mente).
+			\item Funzione \emph{salva$\_$stato} per la memorizzazione dello stato del processo nel relativo descrittore di processo: aggiornamento di tutti i registri nell'apposito array del descrittore.
+			\item Funzione \emph{carica$\_$stato} per il caricamento dello stato di un processo (posto in un descrittore di processo) nel processore. Eventuale cambio di processo qualora il valore di esecuzione sia stato modificato nella routine di sistema. Aggiornamento di CR3 con JMP condizionato (per evitare invalidamenti inutili della TLB), aggiornamento di tutti i registri a partire dall'array nel descrittore di processo. Distruzione della pila sistema del processo precedente nel caso in cui il processo sia stato terminato (se terminiamo un processo la pila sistema relativa al processo non ci serve più).
+			\item Funzione di utilità \emph{liv$\_$chiamante} per la verifica del livello di privilegio del processo chiamante. Si osservi che la cosa funziona solo se si è chiamato precedentemente la \emph{salva$\_$stato}. Si recupera il valore dalla pila sistema, precisamente dal vecchio Code Selector.
+			\item Esempio di primitiva dal punto di vista implementativo: \emph{activate$\_$p}. Verifica di alcune condizioni relative ai parametri interni, uso della funzione di utilità \emph{crea$\_$processo}.
+			\item La nostra prima primitiva: \emph{getprec}, che restituisce il livello di privilegio del processo in esecuzione. Parte Assembler e parte C++, uso dell'array contesto nel descrittore di processo per valori restituiti dalle primitive. Funzione di appoggio, in Assembler, che usa l'istruzione INT e permette il passaggio dal gate per eseguire la primitiva.
+		\end{itemize}
+	\end{itemize}
+	
+	\item \textbf{Nucleo multiprogrammato didattico: semafori}.
+	\begin{itemize}
+		\item Problema della mutua esclusione: evitare che azioni vengano svolte in contemporanea da più parti.
+		\item Problema di sincronizzazione: fare in modo che un'azione si manifesti sempre prima di un'altra.
+		\item Primitive semaforiche come soluzione ai due problemi: idea delle scatole con gettoni, cosa succede quando levo un gettone e lo rilascio, perchè si parla di \emph{soluzione cooperativa}.
+		\item Esempio del buffer con produttore che inserisce un contenuto e consumatore che lo utilizza. 
+		\item \textbf{Implementazione}:
+		\begin{itemize}
+			\item Descrittore di semaforo \emph{des$\_$sem} e array dei semafori \emph{array$\_$dess}. Divisione dell'array in due metà: la prima per i processi di livello utente e la seconda per i processi di livello sistema.
+			\item Funzione di utilità \emph{sem$\_$valido} per la verifica dell'esistenza di un semaforo (secondo i propri livelli di privilegio). Variabili contatore per il numero di semafori allocati nella prima metà e per il numero di semafori allocati nella seconda metà.
+			\item Primitiva \emph{sem$\_$ini} per l'allocazione del semaforo (con funzione di utilità \emph{alloca$\_$sem}).
+			\item Primitiva \emph{sem$\_$wait} per la presa del gettone. Uso del counter nel descrittore semaforico per capire se il processo deve essere posto in attesa (quindi inserito nella coda del descrittore).
+			\item Primitiva  \emph{sem$\_$signal} per il rilascio del gettone. Uso del counter nel descrittore semaforico per capire se ci sono processi da risvegliare (presenti nella coda del descrittore).
+		\end{itemize}
+	\end{itemize}
+	\item \textbf{Nucleo multiprogrammato didattico: paginazione}.
+	\begin{itemize}
+		\item \textbf{Premesse}. 
+		\begin{itemize}
+			\item Indirizzi relativi a periferiche I/O posti nello spazio di memoria. Necessità di gestire la cosa relativamente alla cache (disattivarla o gestire gli indirizzi con politica \emph{write-through}).
+			\item Meccanismo di protezione: garantire l'isolamento tra $M1$ ed $M2$ (cioè i processi utenti non possono accedere ad $M1$ e a tutto ciò che non li riguarda in $M2$). Divieto di utilizzo dell'indirizzo $0$, usato come \emph{nullptr}.
+			\item Gestione della multiprogrammazione: necessaria la memorizzazione del contesto. Pignoleria richiederebbe memorizzazione della RAM. Noi non facciamo questo: poniamo nella RAM informazioni relative a più processi, prese dall'hard disk.
+			\item Problemi conseguenti: determinare la dimensione massima del processo (si ha una parte di cui è possibile determinare la dimensione a priori e una parte che varia runtime, lo stack - si risolve ponendo una dimensione massima); garantire che un processo non acceda a informazioni di altri processi (idea temporanea dei registri LINF ed LSUP); questione degli indirizzi variabili (cioè non possiamo sapere gli indirizzi assoluti a priori se la posizione del processo nella RAM è incerta).
+			\item Introduzione degli indirizzi virtuali per risolvere l'ultimo problema: l'utente indica solo gli offset, e si ottiene l'indirizzo virtuale sommando LINF ed offset (soluzione temporanea).
+			\item Scopo del Kernel: garantire un uso controllato dell'hardware ai processi in esecuzione. 
+			\item Problemi finali che ci portano a parlare di paginazione: necessità di condividere informazioni tra processi, necessità di gestire in modo oculato lo spazio di memoria della RAM (e quindi necessità in alcuni casi di spezzare le info di un processo in più parti sparse per la RAM).
+		\end{itemize}
+		\item Introduzione alla paginazione. Distinzione di uno spazio di indirizzamento virtuale da uno spazio di indirizzamento fisico. Divisione dello spazio di indirizzamento virtuale in regioni da $4\,\text{KiB}$ dette pagine. Divisione dello spazio di indirizzamento fisico in regioni da $4\,\text{KiB}$ dette frame. Perchè si divide in regioni piccole.
+		\item Memory Management Unit per la traduzione degli indirizzi virtuali in indirizzi fisici. Dove viene collocata nell'architettura, quali componenti ragionano in termini di indirizzi fisici e in quali in termini di indirizzi virtuali. Tabella di corrispondenza (una per processo) dove ponendo il numero di pagina si ottiene il corrispondente numero di frame. Contenuto delle tabelle di corrispondenza: numero di frame, bit $P$ per la validità dell'entrata, bit $U/S$ per la validità della traduzione a livello utente, bit $R/W$ per le operazioni di scrittura, bit PWT per la politica Page Write Through nella cache, bit PCD per la disattivazione della cache relativamente all'indirizzo. Bit $A$ e bit $D$ che useremo a sistemi operativi per la paginazione su domanda. 
+		\item Necessità di mappare l'intero modulo $M1$ nella MMU: questo per gestire i cambi di processo nelle routine di sistema. Necessità per lo sviluppatore di sistema di distinguere indirizzi virtuali da indirizzi fisici. L'utente utilizza solo indirizzi virtuali non rendendosi conto dell'esistenza di indirizzi fisici.
+		\item Esempio di programma ed MMU all'opera: diapositive del professore. 
+		\item Introduzione alla struttura dati della tabella di corrispondenza: introduzione al \emph{bitwise trie}. Tabella di corrispondenza troppo grande, necessità di introdurre una struttura dati più flessibile. Archi dell'albero rappresentano terne di bit relativamente all'indirizzo virtuale (dai più significativi ai meno significativi), la foglia contiene l'indirizzo fisico, si hanno al più quattro livelli. Ogni nodo è una tabella di $512$ entrate, avente dimensione di 4096 byte. Registro CR3 contiene l'indirizzo all'albero utilizzato dal processo (si ricordi la variabile cr3 posta nel descrittore di processo). Dimensioni a confronto: apparentemente più peso, in realtà più leggero grazie alla traduzione non completa degli indirizzi e alla condivisione di sottoalberi tra \emph{trie} (si pensi al modulo $M1$, la traduzione è uguale in tutti i \emph{trie} possibili). Bit presenti in ogni entrata (più o meno gli stessi già detti), convenzione sull'uso dei bit R/W e U/S (bit uguali per tutto il percorso se si vuole scrittura e/o accesso da parte dell'utente).
+		\item Scoperta: fino ad ora abbiamo sempre lavorato con la paginazione attiva. Processore parte con modalità di compatibilità: inizialmente a 16 bit, passa a 32 bit con l'attivazione della protezione, passa a 64 bit con l'attivazione della paginazione. Indirizzi posti nel trie sono indirizzi virtuali: perchè deve essere così.
+		\item Introduzione ai registri CR0 (attivazione della paginazione), CR2 (che nel caso di page fault, errore di traduzione nella MMU, contiene l'indirizzo virtuale che si è cercato di tradurre), CR3 che contiene l'indirizzo al \emph{trie} considerato (precisamente il numero di frame, i nodi del trie richiedono un allineamento a 4096). 
+		\item Eccezione \emph{page fault}.
+		\item Introduzione al bit \emph{Page Size Flag}, bit che permette di definire nel \emph{trie} pagine di dimensioni superiori. Posto a $1$ alla fine del percorso del \emph{trie} (pertanto non devo percorrere, per forza, quattro livelli).
+		\item Introduzione alla Transmit Lookaside Buffer, memoria cache dedicata esclusivamente alla MMU. Struttura identica a quella già vista quando abbiamo parlato di memorie cache, bit presenti o meno all'interno delle tabelle delle etichette. Invalidazione delle entrate della MMU: completa aggiornando il registro CR3, parziale utilizzando l'istruzione Assembler invlpg (che chiede un operando). Uso in C++ della funzione \emph{invalida$\_$entrata$\_$TLB}, che chiama la invlpg.
+		\item \textbf{Implementazione}.
+		\begin{itemize}
+			\item \emph{typedef} per distinguere indirizzi fisici da indirizzi virtuali (\emph{paddr} e \emph{vaddr}), \emph{typedef} per identificare entrate di una tabella del trie (\emph{tab$\_$entry}).
+			\item Maschere per gestire il contenuto di una \emph{tab$\_$entry}: bit presenti nell'entrata, maschera per prendere solo la parte relativa all'indirizzo (ricordare l'allineamento di 4096), maschera per prendere solo la parte relativa ai bit di configurazione.
+			\item Funzione \emph{norm} per normalizzare un indirizzo (ricordare la regola che abbiamo introdotto per il buco).
+			\item Funzione \emph{dim$\_$region} che restituisce la dimensione di una regione dato un livello: $0$ è 4096 byte, 1 è $2\,\text{MiB}$, 3 è $1\,\text{GiB}$.
+			\item Funzione \emph{base} per trovare, dato un indirizzo e un livello, l'indirizzo della base della relativa regione (restituisce un vaddr).
+			\item Funzione \emph{limit} per trovare, dato un indirizzo e un livello, la base della prima regione di livello indicato a destra dell'intervallo in cui ci si trova (rispetto all'indirizzo indicato).
+			\item Funzione \emph{extr$\_$IND$\_$FISICO} per estrarre da una entrata di tabella l'indirizzo fisico (ricordare l'allineamento delle tabelle rispetto a 4096). 
+			\item Funzione \emph{set$\_$IND$\_$FISICO} per impostare un nuovo indirizzo fisico nell'entrata di tabella indicata.
+			\item Funzione \emph{get$\_$entry} per ottenere l'indirizzo fisico di una entrata di tabella a partire dall'indirizzo della base della tabella stessa e un indice.
+			\item Classe \emph{tab$\_$iter}: iteratore per scorrere il \emph{trie}. 
+			\item Suddivisione dello spazio di indirizzamento: modulo sistema, modulo I/O e pila sistema. Modulo $M2$: text, data e heap (parte condivisa) e stack (parte privata). 
+			\item Costanti dedicate alla memoria virtuale, con cui indichiamo il numero di pagine riservate a ciascuna sezione dello spazio di indirizzamento virtuale. 
+			\item Costanti dedicate alla memoria fisica, con cui indichiamo la dimensione totale di un ogni sezione della memoria fisica.
+			\item Indirizzi virtuali e fisici nel file ELF.
+			\item Gestione dei frame: descrittore di frame \emph{des$\_$frame} (uso della union per minimizzare lo spazio, numero di entrate valide e lista di frame liberi), array di descrittori, variabile con numero di frame, variabile \emph{primo$\_$frame$\_$libero}, variabile con numero di frame in $M1$ e numero di frame in $M2$. Funzioni di utilità per gestire il contatore \emph{nvalide} nel descrittore di frame. Necessità di gestire un meccanismo che renda disponibile al volo un qualunque frame all'interno della memoria RAM: funzioni di utilità \emph{alloca$\_$frame} e \emph{rilascia$\_$frame}.
+			\item Gestione delle tabelle del trie nella MMU: funzione \emph{alloca$\_$tab} (restituisce il relativo indirizzo fisico) e funzione \emph{rilascia$\_$tab}. Funzioni per gestire settaggio e copia: \emph{set$\_$entry} per impostare una entrata di tabella (dato l'indirizzo di base di una tabella, un indice e il contenuto di un'entrata), \emph{copy$\_$des} per copiare $n$ entrate da una tabella di indirizzo \emph{src} a una tabella di indirizzo \emph{dst} (a partire dall'elemento di indice $i$), \emph{set$\_$des} per impostare $n$ descrittori allo stesso modo in una tabella (a partire dall'elemento di indice $i$).
+			\item Funzioni \emph{map} e \emph{unmap} per la gestione della MMU.
+		\end{itemize}
+	\end{itemize}
+	\item \textbf{Nucleo multiprogrammato didattico: periferiche}.
+	\begin{itemize}
+		\item Recupero dell'esempio del \emph{batch processing}: job equivalente a processo, necessità di fare operazioni di I/O e porsi in attesa finchè la periferica non conclude l'operazione.
+		\item Necessità di limitare l'utente: niente accesso diretto alle periferiche, ma accesso controllato attraverso primitive da noi definite.
+		\item Schema delle possibili primitive di I/O: IN read e OUT write. 
+		\item Necessità di più interruzioni in alcuni casi, soprattutto quando richiediamo più di un byte e la periferica non è in grado di inviarci più di un byte alla volta. 
+		\item Problema di mutua sincronizzazione di sincronizzazione, applicati al caso delle periferiche. Uso dei semafori per gestire la situazione e rottura dell'atomicità delle primitive.
+		\item Primitive per avviare l'operazione di I/O e bloccare il processo
+		\item Driver per gestire il trasferimento dei byte e sbloccare il processo a operazione conclusa.
+		\item Prototipo di descrittore di periferica e array di descrittori. Implementazione in Assembler e in C++ della primitiva.
+		\item Implementazione in Assembler e in C++ del driver.
+		\item Il problema del cavallo di Troia: risoluzione con la primitiva \emph{access}.
+	\end{itemize}
+	\item \textbf{Nucleo multiprogrammato didattico: inizializzazione}.
+	\begin{itemize}
+		\item Funzione \emph{start} implementata in Assembler: recupero del puntatore alla struttura dati \emph{multiboot$\_$info}, esecuzione di costruttori relativi ad oggetti globali attraverso un ciclo. Chiamata della funzione \emph{main} implementata in C++ nel modulo sistema. 
+		\item \textbf{Nella funzione main}.
+		\begin{itemize}
+			\item Inizializzazione di Global Descriptor Table con la chiamata della funzione \emph{init$\_$gdt} implementata in Assembler (e vista precedentemente).
+			\item Inizializzazione dell'APIC con le funzioni già viste nella libreria \emph{libce}. Associazione del piedino $2$ al timer. Più avanti inizializzazione effettiva del timer.
+			\item Modulo $M1$ già caricato dal bootloader, inizializzazione delle strutture dati relative alla gestione dei frame. 
+			\item Definizione di costanti (indirizzi virtuali \emph{vaddr}) con cui rappresentiamo i limiti delle varie aree da noi raggiungibili attraverso lo spazio di indirizzamento virtuale. 
+			\item Creazione della cosiddetta \emph{finestra} con la funzione \emph{map}: attenzione ai primi step, si ignora il primo frame per non usare l'indirizzo $0$ e inizialmente si mappa una piccola regione per gestire memoria video (politica page write through) e apic (politica page cache disable).
+			\item Creazione dello spazio condiviso utilizzando la struttura dati \emph{multiboot$\_$info}, si ricorre a informazioni dettagliate del file ELF (non affrontato in modo profondo). Inizializzazione della MMU e caricamento del relativo indirizzo nel registro CR3.
+			\item Inizializzazione dello heap.
+			\item Creazione di un processo sistema che useremo per concludere alcune inizializzazioni. Approfondimento sulla funzione \emph{crea$\_$processo}.
+			\item Creazione del processo dummy e chiamata della funzione schedulatore per passare al processo sistema creato poco prima. Passaggio al processo con la funzione \emph{salta$\_$a$\_$main}, che è implementata in Assembler e consiste semplicemente in una chiamata di \emph{carica$\_$stato} e IRETQ.
+		\end{itemize}
+		\item \textbf{Nella funzione \emph{main$\_$sistema}}.
+		\begin{itemize}
+			\item Inizializzazione effettiva del timer (smascheriamo il piedino) e chiamiamo una funzione \emph{avvia$\_$timer}. Ricordarsi che il timer, contrariamente ad altre periferiche, è implementato direttamente nel modulo sistema.
+			\item Inizializzazione delle periferiche: creazione di un apposito processo con livello di privilegio sistema (con cui eseguiremo la funzione \emph{main} implementata nel modulo I/O), chiamata della \emph{sem$\_$wait} su un semaforo inizializzato senza gettoni, che ci obbliga a passare al processo precedentemente creato. La \emph{sem$\_$signal} sarà chiamata in questo processo e permetterà di riprendere l'esecuzione della \emph{main$\_$sistema}.
+			\item Creazione del primo processo con livello di privilegio utente (si esegue la funzione \emph{main} implementata dall'utente nel modulo utente).
+		\end{itemize}
+		\item \textbf{Nel modulo I/O: funzione main e cose collegate}.
+		\begin{itemize}
+			\item File header con le intestazioni delle varie primitive. Attraverso questi file si distinguono quali primitive possono essere usate in certi moduli e quali no.
+			\item Inizializzazione della parte di Interrupt Descriptor Table relativa al modulo I/O.
+			\item Funzione \emph{main} che utilizziamo per inizializzare tutto ciò che va inizializzato: inizializzazione dello heap, ridefinizione di operatori uguali a prima, ma con chiamate di primitive di sistema (non si ha l'atomicità nel modulo I/O); inizializzazione della console con la chiamata di \emph{console$\_$init}, inizializzazione dell'hard disk con la chiamata di \emph{hd$\_$init}.
+			\item Chiamata della \emph{sem$\_$signal} per mettere un gettone nel semaforo che abbiamo toccato alla fine della funzione \emph{main$\_$sistema} del modulo sistema. Terminazione del processo e ritorno nella funzione \emph{main$\_$sistema} del modulo sistema.
+		\end{itemize}
+	\end{itemize}
+\end{itemize}
