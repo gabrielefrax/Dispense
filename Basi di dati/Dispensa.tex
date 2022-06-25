@@ -1,0 +1,79 @@
+\documentclass[11pt]{report}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{amssymb} 
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{thmtools}
+\usepackage{multicol}
+%\usepackage{marginnote}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+\usepackage{makecell}
+
+\usepackage{hyperref}
+\usepackage{fancyvrb}
+\usepackage{subcaption}
+%\usepackage[linktocpage=true]{hyperref}
+
+\theoremstyle{definition}
+\newtheorem*{definizione}{Definizione}
+\usepackage{thmtools}
+
+\DeclareRobustCommand{\ojoin}{\rule[0.10ex]{.3em}{.4pt}\llap{\rule[1.40ex]{.3em}{.4pt}}}
+\newcommand{\leftouterjoin}{\mathrel{\ojoin\mkern-6.5mu\Join}}
+\newcommand{\rightouterjoin}{\mathrel{\Join\mkern-6.5mu\ojoin}}
+\newcommand{\fullouterjoin}{\mathrel{\ojoin\mkern-6.5mu\Join\mkern-6.5mu\ojoin}}
+
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+\usepackage{wrapfig}
+
+\usepackage{titlesec, blindtext, color}
+\definecolor{gray75}{gray}{0.75}
+\newcommand{\hsp}{\hspace{20pt}}
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
+
+\usepackage[
+type={CC},
+modifier={by-nc-sa},
+version={4.0},
+]{doclicense}
+
+\begin{document}
+	\title{\textbf{Appunti delle lezioni della Vaglini - Basi di dati}}
+	\author{Gabriele Frassi}
+	\date{A.A 2019-2020 - Secondo semestre}
+	\maketitle
+
+	\include{sections/abstract}
+	
+	\tableofcontents
+
+	\include{sections/unimap}
+
+	\part{Appunti delle lezioni}
+	\include{sections/04_03_2020}
+	\include{sections/11_03_2020}
+	\include{sections/18_03_2020}
+	\include{sections/25_03_2020}
+	\include{sections/01_04_2020}
+	\include{sections/03_04_2020}
+	\include{sections/22_04_2020}
+	\include{sections/24_04_2020}
+	\include{sections/06_05_2020}
+	\include{sections/07_05_2020}
+	\include{sections/13_05_2020}
+	\include{sections/14_05_2020}
+	\include{sections/20_05_2020}
+
+	\appendix
+	
+	\part{Roba aggiuntiva}
+	\include{sections/tabella_costrutti_ER}
+	\include{sections/esempi_algebra_relazionale}
+	\include{sections/esempi_calcolo_relazionale}
+	\include{sections/esempi_dipendenze_funzionali}
+\end{document}

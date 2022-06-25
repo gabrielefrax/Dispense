@@ -1,0 +1,75 @@
+\chapter{Esempi di espressioni in calcolo relazionale}
+
+\section*{Esami A.A 18-19}
+\subsection*{Relazione}
+\addcontentsline{toc}{section}{Attore, Interpretazione, Film, Regista, Nazione, Produzione} 
+\begin{verbatim}
+	ATTORE (CodAttore, NomeAttore, CognomeAttore, AnnoNascita, NazioneNascitaA);
+	INTERPETAZIONE (CodAttore, CodFilm)
+	FILM (CodFilm, Titolo, CasaProduzione, AnnoProduzione, LuogoProduzione, NomeRegista,
+	CognomeRegista, Genere, NomeProduttore, CognomeProduttore, CostoFinale, IncassoTotale)
+	REGISTA(NomeRegista, CognomeRegista, NazioneNascitaR)
+	NAZIONE (Nazione, Continente, Città)
+	PRODUZIONE( NomeCasaProduzione, NomeAgente, CognomeAgente, Sede, Capitale) 
+\end{verbatim}
+
+\subsection*{Scrivere un’espressione in calcolo relazionale che elenchi i cognomi dei produttori che hanno lavorato negli ultimi 5 anni in almeno due case produttrici diverse, ma con lo stesso regista}
+\{CP: cp $|$ Film(CF: cf, AP: ap, NCP: ncp, NR: nr, CR: cr, CP: cp,\dots) $\land$ Film(CF: cf’, AP: ap’, NCP:
+ncp’, NR: nr, CR: cr, CP: cp,\dots) $\land$ cf$\neq$cf’$\land$ ncp$\neq$ncp’ $\land$ ap$>$’2015’ $\land$ ap’$>$’2015’\}
+\begin{itemize}
+	\item Nella \emph{target list} pongo soltanto il cognome del produttore (CP)
+	\item Pensiamo alla corrispondente espressione in algebra relazionale: per ottenere il risultato dobbiamo per forza fare un self join fra tuple di \emph{Film}.
+	\item Poniamo in $f$:
+	\begin{itemize}
+		\item Due schemi di \emph{Film}: presentano la stessa struttura ma le variabili assegnati ai vari attributi presentano delle differenze
+		\begin{itemize}
+			\item I codici film (CF) sono assegnati a variabili diverse ($cf$ e $cf'$). Successivamente porremo come condizione $cf \neq cf'$
+			\item Stessa cosa per il nome della casa di produzione (NCP). Successivamente pongo che $ncp \neq ncp'$
+			\item Nome/Cognome dei registi ($NR$ e $CR$) sono assegnati alle stesse variabili ($cr$ e $nr$). Questo, senza porre ulteriori condizioni, mi permette di dire che i due film sono stati condotti dallo stesso regista.
+			\item Stessa cosa per il cognome del produttore ($CP$), in entrambi i casi si ha la variabile $cp$.
+		\end{itemize}
+		\item Pongo sia l'anno di produzione del primo film che quello del secondo film maggiore di 2015 ($ap > 2015, ap' > 2015$). Ci interessano soltanto i film degli ultimi cinque anni!
+	\end{itemize}
+\end{itemize}
+
+\subsection*{Scrivere un’espressione in calcolo relazionale che elenchi i nomi e cognomi dei registi che hanno diretto almeno due film di genere “spionaggio” nel 2000 senza Sean Connery tra gli interpreti}
+\{NR:nr, CR:cr $|$ Film (CF:cf’, NR:nr, CR:cr, G:g, A:a,..) $\land$ Film (CF:cf, NR:nr, CR:cr, G:g, A:a,\dots) $\land$
+g=’Spionaggio’ $\land$ a=’2000’ $\land$ cf $\neq$ cf’ $\land$ $\neg\exists$ na, ca . (Interpretazione(CF:cf’, CodA:coda) $\land$
+Interpretazione(CF:cf, CodA:coda) $\land$ Attore (CodA:coda, NA:na, CA:ca,\dots) $\land$
+na=’Sean’ $\land$ ca=’Connery’)\}
+\begin{itemize}
+	\item Nella \emph{target list} pongo il nome e il cognome del regista
+	\item Osserviamo la corrispondente espressione algebrica: non ho soltanto dei Join ma anche delle differenze. Quest'ultimo operatore comporta l'introduzione di quantificatori esistenziali e/o universali nell'espressione in calcolo relazionale.
+	\item Poniamo in $f$:
+	\begin{itemize}
+		\item Due schemi di \emph{Film}. Osservo che 
+		\begin{itemize}
+			\item i codici dei film ($CF$) sono assegnati a variabili diverse ($cf$ e $cf'$). Successivamente diremo che $cf \neq cf'$ (associamo due film diversi)
+			\item il nome e il cognome dei registi ($NR$ e $CR$) dei due film sono gli stessi ($nr$ e $cr$)
+			\item il genere ($G$) è lo stesso in entrambi i film ($g$). Diremo che $g = `Spionaggio'$
+			\item L'anno di produzione ($A$) dei due film è lo stesso ($a$). Diremo che $a = `2000'$.
+		\end{itemize}
+		\item Utilizziamo un quantificatore esistenziale due volte (sopra trovate la versione semplificata posta dalla prof, immaginate che ci siano due $\exists$ con più parentesi tonde rispetto a quelle presenti).
+		\begin{itemize}
+			\item Quanto presente all'interno delle parentesi è valido solo con certi valori di $na$ e $ca$. Precisamente abbiamo...
+			\item ... due schemi della relazione \emph{Interpretazione}: uno è associato al primo film ($cf'$), l'altro al secondo film ($cf$).
+			\item ... uno schema della relazione \emph{Attore}: osservo che l'attore associato ai due schemi di Interpretazione è lo stesso (\emph{coda})
+			\item concludo affermando che il nome dell'attore ($na$) è \emph{Sean} e il cognome ($ca$) \emph{Connery}.
+		\end{itemize}
+		Tutto questo è posto dopo il simbolo di negazione: se le proprietà di questo predicato sono verificate allora l'intero predicato $f$ non è verificato. 
+		\item Segue che il predicato $f$ è valido solo se i film individuati non presentano tra gli interpreti \emph{Sean Connery}!
+	\end{itemize}
+\end{itemize}
+
+\subsection*{Scrivere un’espressione in calcolo relazionale che elenchi i titoli di film che, negli anni ’30, sono stati prodotti negli Stati Uniti ma diretti da registi di origine tedesca}
+\{T: t $|$ Film (T: t, AP: ap, NR: nr, CR: cr, CP: c,\dots) $\land$ Nazione (N: n, Cn:cn, C: c) $\land$ Regista(NR: nr,
+CR: cr, NNR: nnr) $\land$ n=’USA’ $\land$ nnr=’Germania’ $\land$ ap$>$’1929’ $\land$ ap$<$ ’1940’\}
+\begin{itemize}
+	\item Nella \emph{target list} pongo soltanto il titolo del film. 
+	\item Nella seconda parte, dove ho la formula $f$, devo porre una serie di condizioni:
+	\begin{itemize}
+		\item Gli schemi delle relazioni coinvolte. In questo caso abbiamo le relazioni \emph{Film}, \emph{Nazione}, \emph{Regista}. La prima contiene i film, la seconda le nazioni in cui si trovano le città, la terza la nazione di origine dei registi.
+		\item Gli schemi sono validi solo ponendo certe variabili: le imposto in modo tale che il nome/cognome regista sia lo stesso sia in film che in regista (nr, cr), stessa cosa per la città di produzione in Film e Nazione (c).
+		\item Successivamente pongo che la nazione della città (n) sia \emph{USA} e che l'anno di produzione (ap) sia compreso tra 1929 e 1940 (estremi esclusi)
+	\end{itemize}
+\end{itemize}

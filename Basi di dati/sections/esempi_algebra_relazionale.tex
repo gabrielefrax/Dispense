@@ -1,0 +1,169 @@
+\chapter{Esempi di espressioni in algebra relazionale}
+
+\section*{Impiegati e supervisione}
+\addcontentsline{toc}{section}{Impiegati e supervisione} 
+\begin{verbatim}
+	IMPIEGATI(Matricola, Nome, Eta, Stipendio)
+	SUPERVISIONE(Impiegato, Capo)
+\end{verbatim}
+\subsection*{Trovare le matricole dei capi degli impiegati che guadagnano più di 40.000 euro}
+\begin{align*}\Pi_{Capo}(\\(Supervisione) \Join_{Impiegato = Matricola} (\Pi_{Matricola} (\sigma_{Stipendio>40.000}(Impiegati)))\\)\end{align*}
+\begin{itemize}
+	
+	\item Osservo che le informazioni necessarie si trovano in entrambe le tabelle: procederemo con un JOIN associando ai supervisori i record degli impiegati che dirigono.
+	\item Ricordiamo la \emph{pushing selections down} e la \emph{pushing projections down}: le proiezioni e le selezioni si eseguono prima di applicare l'operatore JOIN.
+	\item Non applico proiezioni a Supervisione, tutti gli attributi mi servono: \emph{Capo} per essere proiettato e \emph{Impiegato} per il JOIN
+	\item Mi interessano soltanto gli impiegati che hanno stipendio superiore a 40.000 euro: prima di applicare la proiezione della matricola (che mi serve per il JOIN) escludo coloro che non soddisfano la condizione.
+\end{itemize}
+\subsection*{Trovare nome e stipendio dei capi degli impiegati che guadagnano più di 40.000 euro}
+\begin{align*}
+	\Pi_{Nome, Stipendio}(\\(Impiegati)\\\Join_{Matricola=Capo}\\(\Pi_{Capo}(Supervisione \Join_{Impiegato=Matricola} \Pi_{Matricola}(\sigma_{Stipendio > 40.000} (Impiegati))))\\)
+\end{align*}
+\begin{itemize}
+	\item Contrariamente a prima devo indicare \emph{Nome} e \emph{Stipendio}. Dovremo fare un ulteriore JOIN per individuare questi dati e proiettarli.
+	\item L'espressione del primo esempio fa JOIN con Impiegati per trovare le informazioni del supervisore corrispondente
+\end{itemize}
+
+\subsection*{Trovare le matricole dei capi i cui impiegati guadagnano tutti più di 40.000 euro}
+\begin{align*}\Pi_{Capo}(Supervisione)-\Pi_{Capo}(\\(Supervisione) \Join_{Impiegato = Matricola} \Pi_{Matricola} (\sigma_{Stipendio \leq 40.000}(Impiegati))\\)\end{align*}
+\begin{itemize}
+	\item A differenza di prima troviamo il termine \emph{tutti}, quindi non mi limito a verificare un solo impiegato ma tutti gli impiegati. Faccio questo attraverso la sottrazione: la differenza avviene tra l'insieme di tutti i capi e quello dei capi che hanno impiegati con stipendio minore o uguale a 40.000. Il risultato è una relazione con i capi aventi solo impiegati che guadagnano più di 40.000 euro al mese.
+	\item Il secondo termine della differenza si ottiene attraverso un JOIN tra i supervisori e i record degli impiegati che dirigono. Prima di fare JOIN seleziono gli impiegati con stipendio minore o uguale a 40.000 e proietto la matricola.
+\end{itemize}
+
+\subsection*{Trovare gli impiegati che guadagnano più del proprio capo, mostrando matricola, nome e stipendio dell'impiegato e del capo}
+\subsubsection*{Prima versione}
+\begin{align*}
+	\Pi_{Matr,Nome,Stip,MatrC,NomeC,StipC} (\\
+	\sigma_{Stipendio>StipC}(\\
+	\rho_{MatrC,NomeC,StipC,EtaC \leftarrow Matr,Nome,Stip,Eta}(Impiegati)\\ \Join_{MatrC=Capo}\\(Supervisione \Join_{Impiegato=Matricola} Impiegati)
+	\\)
+	\\)
+\end{align*}
+\begin{itemize}
+	\item Dobbiamo mettere a confronto lo stipendio di due impiegati: quello del capo e quello del suo impiegato. Saranno necessari più JOIN: la relazione \emph{Supervisione} mi permette di stabilire chi è capo di chi. Prima faccio JOIN tra Supervisione e Impiegati per trovare le informazioni degli impiegati ($Impiegato=Matricola$), successivamente riapplico il JOIN tra la relazione ottenuta e Impiegati (again) per trovare le informazioni dei capi ($MatrC = Capo$).
+	\item Utilizzo la ridenominazione poichè coinvolgiamo in un operatore su relazione due relazioni aventi attributi con lo stesso nome (il pensiero di porre due volte Impiegati in un'espressione algebrica, quando utilizziamo i JOIN, dovrebbe accenderci la lampadina)
+	\item Con i JOIN ottengo una relazione i cui record contengono le informazioni di un impiegato assieme a quelle del suo capo. Gli impiegati capi, a meno che non siano supervisionati da altri capi, non saranno considerati.
+	\item Alla relazione così ottenuta applico la selezione, per scegliere i record dove un impiegato ha lo stipendio superiore a quello del capo, e la proiezione, per proiettare gli attributi richiesti.
+	\item VERIFICARE Le proiezioni interne prima del JOIN non sono strettamente necessarie: sono coinvolti tutti gli elementi ad eccezione dell'età (buona parte sono attributi da proiettare alla fine, altri sono JOIN)
+\end{itemize}
+\subsubsection*{Seconda versione}
+\begin{align*}
+	\Pi_{Matr,Nome,Stip,MatrC,NomeC,StipC}(\\
+	\rho_{MatrC,NomeC,StipC,EtaC \leftarrow Matr,Nome,Stip,Eta}(Impiegati)\\\Join_{MatrC=Capo\;AND\;Stipendio>StipC}\\(Supervisione \Join_{Impiegato=Matricola} Impiegati)
+	\\)
+\end{align*}
+La versione alternativa rinuncia alla selezione includendo una nuova condizione nel predicato del JOIN. Pongo
+\[\Join_{MatrC=Capo\;AND\;Stipendio>StipC}\]
+Il JOIN avviene tra le informazioni del dipendente e quelle del capo solo se è soddisfatta la condizione richiesta dall'esercizio (stipendio dell'impiegato superiore a quello del capo).
+
+
+\section*{Esami A.A 18-19}
+\subsection*{Relazione}
+\addcontentsline{toc}{section}{Attore, Interpretazione, Film, Regista, Nazione, Produzione} 
+\begin{verbatim}
+	ATTORE (CodAttore, NomeAttore, CognomeAttore, AnnoNascita, NazioneNascitaA);
+	INTERPETAZIONE (CodAttore, CodFilm)
+	FILM (CodFilm, Titolo, CasaProduzione, AnnoProduzione, LuogoProduzione, NomeRegista,
+	CognomeRegista, Genere, NomeProduttore, CognomeProduttore, CostoFinale, IncassoTotale)
+	REGISTA(NomeRegista, CognomeRegista, NazioneNascitaR)
+	NAZIONE (Nazione, Continente, Città)
+	PRODUZIONE( NomeCasaProduzione, NomeAgente, CognomeAgente, Sede, Capitale) 
+\end{verbatim}
+\subsection*{Scrivere un’espressione in algebra relazionale che elenchi i nomi e cognomi degli agenti che nel 2016 hanno prodotto solo film il cui costo è stato superiore all’incasso}
+\begin{align*}\Pi_{NA, CA}(Produzione)-\Pi_{NA, CA}(\\\Pi_{NCP, NA, CA}(Produzione)\\ \Join_{NCP = CP} \\\Pi_{CP}(\sigma_{A=2016\;AND\;CF \leq IT}(Film))\\)\end{align*}
+\begin{itemize}
+	\item \emph{solo film}, all'interno della consegna, mi fa pensare a una sottrazione: sottraggo all'insieme di tutti gli agenti quelli che hanno prodotto film con un costo finale minore o uguale all'incasso nel 2016. La differenza mi permette di ottenere gli agenti che nel 2016 hanno prodotto solo film con costo superiore all'incasso.
+	\item Gli attributi richiesti sono \emph{NomeAgente} e \emph{CognomeAgente}: se eseguo la differenza le due relazioni dovranno proiettare solo queio due attributi.
+	\item Eseguo un JOIN tra produzione e film: mi interessano esclusivamente i film prodotti nel 2016 con costo finale minore o uguale all'incasso totale, quindi applico la selezione (ricordando la \emph{pushing selections down}.
+	\item Applico le proiezioni alle singole relazioni coinvolte nel JOIN, ricordando la \emph{pushing projections down}: gli attributi proiettati sono quelli necessari per il JOIN (se non li includo è come se non ci fossero) e quelli che devo proiettare alla fine (Nome e cognome dell'agente). 
+\end{itemize}
+
+\subsection*{Scrivere un'espressione in algebra relazionale che elenchi i nomi e i cognomi dei registi che hanno diretto almeno due film di genere spionaggio nel 2000 senza Sean Connery tra gli interpreti}
+\begin{itemize}
+	\item Utilizziamo quanto detto con le relazione derivate assegnando a un'espressione un certo nome. In questo modo indichiamo con un solo nome un risultato intermedio evitando confusione nell'espressione finale.
+	\item Osservo che gli unici film che mi interessano sono stati prodotti nel 2000 e sono di genere Spionaggio. Segue
+	\[Film2000S = \sigma_{AnnoProduzione = 2000\;AND\;Genere = `Spionaggio'}(Film)\]
+	\item Devo trovare registi che hanno fatto almeno due film con le caratteristiche dette prima e senza Sean Connery. Sicuramente sarà presente la differenza: sottraggo a tutti i film di genere spionaggio del 2000 quelli con le stesse proprietà dove è coinvolto Sean Connery come attore.
+	\begin{align*}PrimoFilm = \pi_{N,C,CF}(Film2000S) -\\
+		\pi_{N,C,CF}(\\
+		\pi_{N,C,CF}(Film2000S) \Join Interpretazione \Join \pi_{CodAttore}( \sigma_{NA = `Sean'\;AND\;CognA = `Connery'}(Attore))
+		\\)\end{align*}
+	\item Devo trovare almeno due film fatti dallo stesso regista (uguaglianza di nome e cognome): farò un JOIN.
+	\item Considero che entrambi i film presentano le stesse caratteristiche: quindi farò fare JOIN tra due blocchi uguali (quello scritto prima), applicando la ridenominazione a uno dei due (avviene un self join, devo distinguere gli attributi del primo blocco da quelli del secondo blocco per poi stabilirne l'uguaglianza)
+	\begin{align*}SecondoFilm = \rho_{X' \longleftarrow x}(\pi_{N,C,CF}(Film2000S) -\\
+		\pi_{N,C,CF}(\\
+		\pi_{N,C,CF}(Film2000S) \Join Interpretazione \Join \pi_{CodAttore}( \sigma_{NA = `Sean'\;AND\;CognA = `Connery'}(Attore))
+		\\))\end{align*}
+	\item Segue
+	\[PrimoFilm \Join_{CF \neq CF'\;AND\;NR=NR'\;AND\;CR=CR'}SecondoFilm\]
+\end{itemize}
+\subsection*{Scrivere un'espressione in algebra relazionale che elenchi i nomi e cognomi degli attori che hanno interpretato almeno due film di genere romantico nel 2018 e nessuno di genere avventura}
+\begin{itemize}
+	
+	\item Utilizziamo quanto detto con le relazione derivate assegnando a un'espressione un certo nome. In questo modo indichiamo con un solo nome un risultato intermedio evitando confusione nell'espressione finale.
+	\item Osservo che gli unici film che mi interessano sono quelli di genere romantico del 2018. Segue
+	\[Film2018R = \sigma_{AnnoProduzione = 2018\;AND\;Genere = `Romantico'}(Film)\]
+	Considero anche i film di avventura del 2018
+	\[Film2018A = \sigma_{AnnoProduzione = 2018\;AND\;Genere = `Avventura'}(Film)\]
+	\item Avremo una differenza tra coloro che hanno interpretato almeno due film di genere romantico nel 2018 e coloro che hanno interpretato film di genere avventura nel 2018. Questa ci permetterà di ottenere coloro che hanno interpretato almeno due film di genere romantico nel 2018 e che non hanno mai interpretato film di genere avventura
+	\[DueGenereRomantico2018-GenereAvventura2018\]
+	\item L'espressione corrispondente di \emph{GenereAvventura2018} non è difficile da trovare
+\end{itemize}
+
+\subsection*{Scrivere un'espressione in algebra relazionale che elenchi i nomi e cognomi dei registi che hanno girato nel 2019 film sempre con lo stesso produttore, anche per case di produzione diverse}
+
+\begin{itemize}
+	\item Utilizziamo quanto detto con le relazione derivate assegnando a un'espressione un certo nome. In questo modo indichiamo con un solo nome un risultato intermedio evitando confusione nell'espressione finale.
+	\item Osservo che gli unici film che mi interessano sono quelli di genere romantico del 2019. Segue
+	\[Film2019 = \sigma_{AnnoProduzione = 2019}(Film)\]
+	\item Svolgo una differenza tra i registi che hanno girato film nel 2019 e i registi che hanno girato film nel 2019 con produttori diversi. Ottengo così i registi che hanno girato film nel 2019 sempre con lo stesso produttore.
+	\[Registi2019 - Registi2019pd\]
+	\item Il primo elemento è semplice
+	\[Registi2019 = \pi_{NR,CR}(Film2019)\]
+	\item Per il secondo dobbiamo fare un self join tra film: avremo una tupla se è possibile associare a un film di un certo regista un altro diretto dallo stesso con un produttore diverso
+	\begin{align*}Registi2019pd = \pi_{CF,NR,CR,NP,CP}(Film2019)\\ \Join_{CF \neq CF'\;AND\;NR=NR'\;AND\;CR=CR'\;AND\;NP\neq NP'\;AND\;CP\neq CP'} \\\rho_{X' \longleftarrow X}(\pi_{CF,NR,CR,NP,CP}(Film2019))\end{align*}
+	\begin{itemize}
+		\item I film sono diversi (CodFilm diverso)
+		\item I registi sono gli stessi (Nome e cognomi registi uguali)
+		\item I produttori sono diversi (quindi non avranno stesso nome e cognome)
+	\end{itemize}
+\end{itemize}
+
+\subsection*{Scrivere un'espressione in algebra relazionale che elenchi i cognomi dei produttori che hanno lavorato negli ultimi 5 anni in almeno due case produttrici diverse, ma con lo stesso regista}
+
+\begin{itemize}
+	\item Utilizziamo quanto detto con le relazione derivate assegnando a un'espressione un certo nome. In questo modo indichiamo con un solo nome un risultato intermedio evitando confusione nell'espressione finale.
+	\item Osservo che gli unici film che mi interessano sono quelli degli ultimi 5 anni. Segue
+	\[Film5 = \pi_{CF,NR,CR,NCP,CP}(\sigma_{AnnoProduzione > 2015}(Film))\]
+	\item Faccio un self Join (segue adozione della ridenominazione per una delle due relazioni)
+	\[ \pi_{CP}(Film5 \Join_{CF \neq CF'\;AND\;NR=NR'\;AND\;NCP\neq NCP'\;AND\;CP=CP'\;AND\;NP = NP'} \rho_{X' \longleftarrow X}(Film5))\]
+	\begin{itemize}
+		\item I due film hanno CodFilm diverso
+		\item Presentano lo stesso regista, quindi Nomi e Cognomi del regista sono gli stessi
+		\item Le case di produzione dei due film sono diverse
+		\item Il produttore è lo stesso (quindi cognome e nome del produttore è lo stesso in entrambi i film)
+	\end{itemize}
+	Di tutto questo proietto i cognomi dei produttori e basta (CP)
+\end{itemize}
+
+\subsection*{Scrivere un'espressione in algebra relazionale che elenchi i titoli di film che, negli anni 30, sono stati prodotti negli Stati Uniti ma diretti da registi di origine tedesca}
+
+
+\begin{itemize}
+	\item Utilizziamo quanto detto con le relazione derivate assegnando a un'espressione un certo nome. In questo modo indichiamo con un solo nome un risultato intermedio evitando confusione nell'espressione finale.
+	\item Osservo che gli unici film che mi interessano sono quelli prodotti negli anni 30. Segue
+	\[Film30 = \sigma_{AnnoProduzione > 1929\;AND\;AnnoProduzione < 1940}(Film)\]
+	\item I film che voglio trovare sono prodotti negli Stati Uniti e diretti da registi di origine tedesca:
+	\begin{itemize}
+		\item Per il primo elemento faccio Join tra Film e Nazione in modo da individuare a quale stato appartiene una certa città
+		\item Per il secondo elemento faccio Join tra Film e Regista, tabella che contiene la nazione di nascita di ogni singolo regista.
+	\end{itemize}
+	\item Segue che mi interessano solo le città degli Stati Uniti
+	\[CittaUSA = \pi_{Citta}(\sigma_{Nazione = `Usa'}(Nazione))\]
+	e i registi di origine tedesca
+	\[RegistiTedeschi = \pi_{NR,CR}(\sigma_{NNR = `Germania' }(Regista)\]
+	\item Segue (con le proiezioni legate a Film)
+	\[\pi_{T}(\pi_{NR,CR,T}(\pi_{LP, T, NR, CR} (Film30) \Join_{LP=Citta} CittaUSA) \Join RegistiTedeschi)\]
+	Tenere sempre conto della proiezione di attributi necessari solo per fare Join
+\end{itemize}
